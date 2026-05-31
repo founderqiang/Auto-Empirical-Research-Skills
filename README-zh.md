@@ -50,6 +50,7 @@
 [![Audit Phases](https://img.shields.io/badge/audit-6%20phases%20%2F%2013%20risk%20categories-blueviolet)](SECURITY-SCAN-REPORT.md)
 [![Hooks Audited](https://img.shields.io/badge/hook%20scripts-40%2B%20audited-blue)](SECURITY-SCAN-REPORT.md)
 [![Zero Threats](https://img.shields.io/badge/threats%20found-0-brightgreen)](SECURITY-SCAN-REPORT.md)
+[![Validate catalog](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/actions/workflows/validate-catalog.yml/badge.svg)](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/actions/workflows/validate-catalog.yml)
 
 **实证研究全流程 AI Agent Skills 大全 — 收录 119 个 GitHub 仓库 / 覆盖 23,000+ Skills**
 
@@ -72,6 +73,22 @@
 > 🔒 **可信使用**：本仓库 52 个 Skill / 2,940+ 文件经[系统性安全扫描](SECURITY-SCAN-REPORT.md) —— **52/52 全部 CLEAN，零 FLAGGED**，零网络外泄、零反向 shell、零 prompt 注入。
 >
 > 💡 **想要开箱即用？** 不必自己拼装 Skills —— 直接试试 [**→ copaper.ai**](https://copaper.ai)，让 Stanford 研究方法论团队为你做完整的实证流水线。
+
+---
+
+## 快速开始
+
+- 浏览自动生成的本地 catalog：[`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md)
+- 直接复制常用实证工作流：[`docs/GOLDEN_WORKFLOWS.md`](docs/GOLDEN_WORKFLOWS.md)
+- 使用机器可读索引：[`catalog/skills.json`](catalog/skills.json)
+- 查看贡献与质量门槛：[`docs/QUALITY_GATE.md`](docs/QUALITY_GATE.md)
+- 查看本轮 repo 体检与路线图：[`docs/REPO_AUDIT_2026-05-31.md`](docs/REPO_AUDIT_2026-05-31.md) · [`docs/ROADMAP.md`](docs/ROADMAP.md)
+- 本地重建与校验：
+
+```bash
+make catalog
+make validate
+```
 
 ---
 
@@ -136,10 +153,10 @@
 <details>
 <summary><b>2026-04-24：📘 Full Empirical Analysis Skill 正式收录 —— 传统 Python 计量生态 8 步闭环（skills/00.1）</b></summary>
 
-- **📘 [Full Empirical Analysis Skill](skills/00.1-Full-empirical-analysis-skill/)**：与 StatsPAI 互为**同日双更 / 哲学对位**的姊妹 skill，放在 [`skills/00.1-Full-empirical-analysis-skill/`](skills/00.1-Full-empirical-analysis-skill/) —— **第 0.1 位，显式可审计的对照组**。
+- **📘 [Full Empirical Analysis Skill](skills/00.1-Full-empirical-analysis-skill_Python/)**：与 StatsPAI 互为**同日双更 / 哲学对位**的姊妹 skill，放在 [`skills/00.1-Full-empirical-analysis-skill_Python/`](skills/00.1-Full-empirical-analysis-skill_Python/) —— **第 0.1 位，显式可审计的对照组**。
   - **🧱 传统 Python 计量生态，无 DSL 包裹**：每步显式调用 `pandas` / `numpy` / `scipy` / `statsmodels` / `linearmodels` / `pyfixest` / `rdrobust` / `econml` / `causalml` / `matplotlib` / `seaborn` —— Agent 写出的每一行代码都能被逐行审计、逐行替换。
   - **🔁 8 步完整闭环（比 StatsPAI 的 6 步更细颗粒度）**：(1) 数据清洗（MCAR/MAR/MNAR、IQR/z/Mahalanobis 异常值、`validate=` 防 m:m 合并、面板结构校验）→ (2) 变量构造（log/IHS/Box–Cox、1/99 缩尾、z/MinMax/Robust 标准化、交互/滞后/差分、CPI 平减、交错 DID 时间变量）→ (3) 描述统计与 Table 1（带 SMD+t 检验的分层表、相关热图+显著性星、4 类分布图、DID 动机图、面板覆盖热图）→ (4) 诊断检验（12 类：正态/异方差/自相关/多重共线/平稳/协整/内生/弱工具/过度识别/面板 Hausman/设定 RESET/杠杆 Cook's D）→ (5) 基准建模（12 类估计器：OLS/面板 FE-RE-FD/GLM/IV-2SLS-LIML-GMM/DID 五家-2×2/TWFE/事件研究/CS/SA/BJS/SDiD/RD-Sharp/Fuzzy/Kink/多断点/SC/PSM/IPW/EB/DML/因果森林/Heckman/分位数）→ (6) 稳健性电池（M1–M6 规范梯度、cluster 级别敏感性、wild cluster bootstrap、安慰剂 timing+permutation、规范曲线、Oster δ\*、LOO、Rosenbaum）→ (7) 进一步分析（异质性 4 法/机制 outcome ladder/Baron–Kenny+Imai 中介/调节 margins plot/moderated mediation/dose-response/spillover）→ (8) 发表级表图（`stargazer` / `pyfixest.etable` / coefplot / event-study / binscatter / forest / RD plot / CATE 热图 / love plot，全套 LaTeX/Word/Excel 导出）
-  - **📚 渐进披露架构**：`SKILL.md` 只给每步最常用的那一种写法（610 行主干），变体下沉到 8 个 [`references/NN-*.md`](skills/00.1-Full-empirical-analysis-skill/references/)（合计 3000+ 行深度手册），**主干轻、细节厚**，Agent 用到时才加载。
+  - **📚 渐进披露架构**：`SKILL.md` 只给每步最常用的那一种写法（610 行主干），变体下沉到 8 个 [`references/NN-*.md`](skills/00.1-Full-empirical-analysis-skill_Python/references/)（合计 3000+ 行深度手册），**主干轻、细节厚**，Agent 用到时才加载。
   - **🆚 与 StatsPAI 的对位关系**：StatsPAI = **agent-native 一键 DSL**（`sp.causal(...)` 一句跑完）；本 skill = **显式传统生态**（每行代码都能换库、逐行审计）。两者并行收录、互不替代 —— 信任 DSL 时用 StatsPAI，要教学/审计/全量控制时用本 skill。
   - **适用场景**：复现应用经济学论文、审稿人级别的逐行审计、研究生教学、需要把"每一个诊断检验和稳健性都挂进 pipeline"的严谨实证项目。
 
@@ -148,13 +165,13 @@
 <details>
 <summary><b>2026-04-24：🔥 StatsPAI Skill 正式收录 —— 一条龙自动化完成全部实证分析（skills/00）</b></summary>
 
-- **🔥🔥 [StatsPAI Skill](skills/00-StatsPAI_skill/)**：我们自研的 **Agent-Native 实证分析一体化 Skill** 正式收录本仓库，放在 [`skills/00-StatsPAI_skill/`](skills/00-StatsPAI_skill/) —— **第 0 位，仓库门面**。
+- **🔥🔥 [StatsPAI Skill](skills/00-Full-empirical-analysis-skill_StatsPAI/)**：我们自研的 **Agent-Native 实证分析一体化 Skill** 正式收录本仓库，放在 [`skills/00-Full-empirical-analysis-skill_StatsPAI/`](skills/00-Full-empirical-analysis-skill_StatsPAI/) —— **第 0 位，仓库门面**。
   - **🚀 一条龙自动化完成全部实证分析**：从数据清洗（pandas 前置）→ EDA & 描述统计（`sp.sumstats` / `sp.balance_table`）→ 预检诊断（`sp.diagnose` / `sp.balance_panel` / 重叠性 / 缺失性）→ 研究问题 DSL（`sp.causal_question(...).identify()`）→ LLM 辅助 DAG 发现（`sp.llm_dag_propose` / `validate` / `constrained`）→ 一键编排估计（`sp.causal(...)`）→ 稳健性检验（`sp.spec_curve` / `sp.honest_did` / `sp.evalue`），**6 步完整闭环，无需切换工具，Agent 一句话跑完**。
   - **900+ 函数，一个 `import statspai as sp` 搞定**：相比 2026-04-12 的 390+ 函数版本，函数数量翻倍多，覆盖 OLS、IV、面板、DID（Callaway-Sant'Anna / Sun-Abraham / Bacon / HonestDID / 连续 DID）、RDD（Sharp / Fuzzy / 多断点 / Kink）、PSM、SCM、SDID、DML、因果森林、Meta-Learners、TMLE、AIPW、神经因果模型（TARNet / CFRNet / DragonNet）、**文本因果（`sp.causal_text`）**、Heckman、结构估计（BLP）。
   - **Agent-Native 自描述 API**：`sp.list_functions()` / `sp.describe_function()` / `sp.function_schema()` —— Agent 无需查文档即可发现和理解每个函数；统一 `CausalResult` 对象带 `.summary()` / `.plot()` / `.to_latex()` / `.to_word()` / `.to_excel()` / `.cite()` 和结构化 `.diagnostics` 字典，**天然适配 LLM 驱动的工作流**。
   - **Estimand-first 决策**：`sp.causal_question` 让 "DID vs RD vs IV？" 的选择**显式化、可辩护**，不再靠猜。
-  - **JOSS 投稿中，MIT 开源**。[→ PyPI](https://pypi.org/project/StatsPAI/) | [→ GitHub](https://github.com/brycewang-stanford/StatsPAI) | [→ 本地 Skill](skills/00-StatsPAI_skill/)
-- **🔁 每周上游自动同步**：新增 GitHub Action，每周从 StatsPAI 主仓库自动拉取最新 `SKILL.md` / `README.md` 到 [`skills/00-StatsPAI_skill/`](skills/00-StatsPAI_skill/)，**用户永远拿到最新版**。
+  - **JOSS 投稿中，MIT 开源**。[→ PyPI](https://pypi.org/project/StatsPAI/) | [→ GitHub](https://github.com/brycewang-stanford/StatsPAI) | [→ 本地 Skill](skills/00-Full-empirical-analysis-skill_StatsPAI/)
+- **🔁 每周上游自动同步**：新增 GitHub Action，每周从 StatsPAI 主仓库自动拉取最新 `SKILL.md` / `README.md` 到 [`skills/00-Full-empirical-analysis-skill_StatsPAI/`](skills/00-Full-empirical-analysis-skill_StatsPAI/)，**用户永远拿到最新版**。
 - 修正了 StatsPAI Skill 代码示例中若干 `sp.*` 函数签名，Step 0-6 代码块明确标注为 illustrative 示例（防止 Agent 照抄出错）。
 
 </details>
@@ -200,6 +217,7 @@
 
 ## 目录
 
+- [快速开始](#快速开始)
 - [🆕 更新日志](#-更新日志)
 - [这份列表能帮你什么？](#这份列表能帮你什么)
 - [按研究流程速查](#按研究流程速查)
@@ -268,8 +286,8 @@ Skill 就是解决这个问题的：它是给 AI 的**方法论操作手册**。
 | 方案 | 覆盖范围 | 特点 | 链接 |
 |------|---------|------|------|
 | **CoPaper.AI** | 数据分析 → 论文写作 | 20 个方法论 Skills 内置，多代理架构，20 分钟完成主流期刊级别实证论文 | [copaper.ai](https://copaper.ai) |
-| **StatsPAI Skill** 🔥🔥 | **一条龙自动化：从数据清洗到实证建模** | **900+ 函数，一个 `import statspai as sp`**。Agent 一句话跑完 EDA → 预检 → 研究问题 DSL → DAG 发现 → 模型估计 → 稳健性检验的 6 步完整闭环。Agent-native 自描述 API，覆盖 OLS/IV/DID(含 Callaway-Sant'Anna、Sun-Abraham、HonestDID、连续 DID)/RDD/PSM/SCM/DML/因果森林/神经因果/文本因果，发表级输出（Word/Excel/LaTeX） | [本地 Skill](skills/00-StatsPAI_skill/) · [GitHub](https://github.com/brycewang-stanford/StatsPAI) |
-| **Full Empirical Analysis Skill** 📘 | **传统 Python 生态显式 8 步闭环**（StatsPAI 的哲学对位） | 不引入任何 DSL 包裹，Agent 直接调用 `pandas` / `statsmodels` / `linearmodels` / `pyfixest` / `rdrobust` / `econml` / `causalml` / `matplotlib`。覆盖**数据清洗 → 变量构造 → 描述统计 → 诊断检验 → 建模 → 稳健性 → 机制/异质性/中介/调节 → 发表级表图** 8 步，每步配深度参考手册。适合教学、审稿级审计、需要逐行控制的严谨复现 | [本地 Skill](skills/00.1-Full-empirical-analysis-skill/) |
+| **StatsPAI Skill** 🔥🔥 | **一条龙自动化：从数据清洗到实证建模** | **900+ 函数，一个 `import statspai as sp`**。Agent 一句话跑完 EDA → 预检 → 研究问题 DSL → DAG 发现 → 模型估计 → 稳健性检验的 6 步完整闭环。Agent-native 自描述 API，覆盖 OLS/IV/DID(含 Callaway-Sant'Anna、Sun-Abraham、HonestDID、连续 DID)/RDD/PSM/SCM/DML/因果森林/神经因果/文本因果，发表级输出（Word/Excel/LaTeX） | [本地 Skill](skills/00-Full-empirical-analysis-skill_StatsPAI/) · [GitHub](https://github.com/brycewang-stanford/StatsPAI) |
+| **Full Empirical Analysis Skill** 📘 | **传统 Python 生态显式 8 步闭环**（StatsPAI 的哲学对位） | 不引入任何 DSL 包裹，Agent 直接调用 `pandas` / `statsmodels` / `linearmodels` / `pyfixest` / `rdrobust` / `econml` / `causalml` / `matplotlib`。覆盖**数据清洗 → 变量构造 → 描述统计 → 诊断检验 → 建模 → 稳健性 → 机制/异质性/中介/调节 → 发表级表图** 8 步，每步配深度参考手册。适合教学、审稿级审计、需要逐行控制的严谨复现 | [本地 Skill](skills/00.1-Full-empirical-analysis-skill_Python/) |
 | **Full Empirical Analysis Skill — Stata** 📊 | **Stata 显式 .do 8 步闭环**（同步 00.1 的 Stata 版） | `reghdfe` + `ivreg2` + `csdid` + `did_imputation` + `eventstudyinteract` + `sdid` + `rdrobust` + `synth` + `psmatch2` + `teffects` + `ebalance` + `boottest` + `ritest` + `rwolf` + `bacondecomp` + `honestdid` + `coefplot` + `esttab` + `outreg2` + `asdoc` + `binscatter`。同样 8 步，从 `use` / `import` 一直到 `.tex` / `.rtf` 表 + `.pdf` 图。审稿人级 Stata 复现首选 | [本地 Skill](skills/00.2-Full-empirical-analysis-skill_Stata/) |
 | **Full Empirical Analysis Skill — R** 📗 | **tidyverse + fixest 8 步闭环 + Quarto 渲染**（同步 00.1 / 00.2 的 R 版） | `dplyr` + `haven` + `fixest` + `did` + `synthdid` + `bacondecomp` + `HonestDiD` + `rdrobust` + `tidysynth` + `gsynth` + `MatchIt` + `WeightIt` + `cobalt` + `ebal` + `grf` + `DoubleML` + `mediation` + `lavaan` + `marginaleffects` + `modelsummary` + `kableExtra` + `gt` + `flextable` + `ggplot2` + `iplot` + `binsreg` + `cowplot`。8 步均可塞进一个 `.qmd` 文件，`quarto render` 一键产出 PDF/HTML/Word 一体化复现报告。 | [本地 Skill](skills/00.3-Full-empirical-analysis-skill_R/) |
 | **Claude Scholar** | 选题 → 投稿 | 25+ Skills 覆盖研究全生命周期，集成 Zotero MCP | [GitHub](https://github.com/Galaxy-Dawn/claude-scholar) |
@@ -301,8 +319,8 @@ Skill 就是解决这个问题的：它是给 AI 的**方法论操作手册**。
 | 套件 | 核心特色 | 适用场景 |
 |------|---------|---------|
 | **[CoPaper.AI](https://copaper.ai)** | **20 个方法论 Skills**（OLS、DID、交错DID、IV、RDD、PSM、SCM、DML、因果森林等），多代理架构（Supervisor + 4 子代理），智能路由，结果自动输出 | 经济学实证研究全流程 |
-| **[StatsPAI Skill](skills/00-StatsPAI_skill/)** 🔥🔥 | **一条龙自动化完成全部实证分析**。Agent-native 计量经济学 Python 包：**900+ 函数**，一个 `import statspai as sp` 搞定 EDA → 研究问题 DSL → LLM 辅助 DAG 发现 → 估计 → 稳健性检验的完整闭环。自描述 API（`list_functions()` / `describe_function()` / `function_schema()`），统一 `CausalResult` 对象。覆盖 OLS、IV、面板数据、DID（Callaway-Sant'Anna / Sun-Abraham / Bacon / HonestDID / 连续 DID）、RDD（Sharp/Fuzzy/多断点/Kink）、PSM、SCM、SDID、DML、因果森林、Meta-Learners、TMLE、AIPW、神经因果模型（TARNet/CFRNet/DragonNet）、**文本因果（`sp.causal_text`）**、Heckman、结构估计（BLP）。**JOSS 投稿中，MIT 协议** | 实证研究全流程自动化：数据清洗后一句话跑完 EDA → 建模 → 稳健性 |
-| **[Full Empirical Analysis Skill](skills/00.1-Full-empirical-analysis-skill/)** 📘 | **传统 Python 计量生态的显式 8 步闭环**（与 StatsPAI 互为哲学对位：一个 DSL 一键跑，一个显式逐行跑）。不引入任何封装包，直接驱动 `pandas` + `numpy` + `scipy` + `statsmodels` + `linearmodels` + `pyfixest` + `rdrobust` + `econml` + `causalml` + `matplotlib` + `seaborn`。8 步细颗粒闭环：(1) 数据清洗（MCAR/MAR/MNAR、IQR/z/Mahalanobis、`validate=` 防 m:m、面板结构校验）→ (2) 变量构造（log/IHS/Box–Cox、1/99 缩尾、z/MinMax/Robust、交互/滞后/差分、CPI 平减、交错 DID 时间变量）→ (3) 描述统计（SMD+t 检验分层 Table 1、相关热图带显著性星、分布 4 联图、DID 动机图、面板覆盖热图）→ (4) 诊断检验（12 类：正态/异方差/自相关/共线/平稳/协整/内生/弱 IV/过识别/Hausman/RESET/Cook's D）→ (5) 建模（OLS/面板 FE-RE-FD/GLM/IV-2SLS-LIML-GMM/DID 五家/RD 四类/SC/PSM-IPW-EB/DML/CF/Heckman/QR 共 12 类）→ (6) 稳健性（M1–M6 规范梯度、cluster 敏感性、wild bootstrap、安慰剂、规范曲线、Oster δ\*、LOO、Rosenbaum）→ (7) 进一步分析（异质性 4 法/机制 outcome ladder/Baron–Kenny+Imai 中介/moderated mediation/dose-response/spillover）→ (8) 发表级表图（`stargazer`/`etable`/coefplot/event-study/binscatter/forest/RD plot/CATE 热图/love plot + LaTeX/Word/Excel 导出）。**SKILL.md 主干 610 行 + 8 个深度 references 3000+ 行，按需加载** | 教学、审稿人级审计、研究生复现训练、需要逐行控制与全量诊断的严谨实证项目 |
+| **[StatsPAI Skill](skills/00-Full-empirical-analysis-skill_StatsPAI/)** 🔥🔥 | **一条龙自动化完成全部实证分析**。Agent-native 计量经济学 Python 包：**900+ 函数**，一个 `import statspai as sp` 搞定 EDA → 研究问题 DSL → LLM 辅助 DAG 发现 → 估计 → 稳健性检验的完整闭环。自描述 API（`list_functions()` / `describe_function()` / `function_schema()`），统一 `CausalResult` 对象。覆盖 OLS、IV、面板数据、DID（Callaway-Sant'Anna / Sun-Abraham / Bacon / HonestDID / 连续 DID）、RDD（Sharp/Fuzzy/多断点/Kink）、PSM、SCM、SDID、DML、因果森林、Meta-Learners、TMLE、AIPW、神经因果模型（TARNet/CFRNet/DragonNet）、**文本因果（`sp.causal_text`）**、Heckman、结构估计（BLP）。**JOSS 投稿中，MIT 协议** | 实证研究全流程自动化：数据清洗后一句话跑完 EDA → 建模 → 稳健性 |
+| **[Full Empirical Analysis Skill](skills/00.1-Full-empirical-analysis-skill_Python/)** 📘 | **传统 Python 计量生态的显式 8 步闭环**（与 StatsPAI 互为哲学对位：一个 DSL 一键跑，一个显式逐行跑）。不引入任何封装包，直接驱动 `pandas` + `numpy` + `scipy` + `statsmodels` + `linearmodels` + `pyfixest` + `rdrobust` + `econml` + `causalml` + `matplotlib` + `seaborn`。8 步细颗粒闭环：(1) 数据清洗（MCAR/MAR/MNAR、IQR/z/Mahalanobis、`validate=` 防 m:m、面板结构校验）→ (2) 变量构造（log/IHS/Box–Cox、1/99 缩尾、z/MinMax/Robust、交互/滞后/差分、CPI 平减、交错 DID 时间变量）→ (3) 描述统计（SMD+t 检验分层 Table 1、相关热图带显著性星、分布 4 联图、DID 动机图、面板覆盖热图）→ (4) 诊断检验（12 类：正态/异方差/自相关/共线/平稳/协整/内生/弱 IV/过识别/Hausman/RESET/Cook's D）→ (5) 建模（OLS/面板 FE-RE-FD/GLM/IV-2SLS-LIML-GMM/DID 五家/RD 四类/SC/PSM-IPW-EB/DML/CF/Heckman/QR 共 12 类）→ (6) 稳健性（M1–M6 规范梯度、cluster 敏感性、wild bootstrap、安慰剂、规范曲线、Oster δ\*、LOO、Rosenbaum）→ (7) 进一步分析（异质性 4 法/机制 outcome ladder/Baron–Kenny+Imai 中介/moderated mediation/dose-response/spillover）→ (8) 发表级表图（`stargazer`/`etable`/coefplot/event-study/binscatter/forest/RD plot/CATE 热图/love plot + LaTeX/Word/Excel 导出）。**SKILL.md 主干 610 行 + 8 个深度 references 3000+ 行，按需加载** | 教学、审稿人级审计、研究生复现训练、需要逐行控制与全量诊断的严谨实证项目 |
 | **[Full Empirical Analysis Skill — Stata](skills/00.2-Full-empirical-analysis-skill_Stata/)** 📊 | **传统 Stata 生态的显式 .do 8 步闭环**（00.1 的 Stata 版，与之同结构、同节奏）。一份 `ssc install` 装齐 30+ 包，全程使用社区事实标准命令链：`reghdfe` / `ivreg2` / `ivreghdfe` / `csdid` / `did_imputation` / `eventstudyinteract` / `sdid` / `did_multiplegt_dyn` / `bacondecomp` / `honestdid` / `rdrobust` / `rddensity` / `synth` / `synth_runner` / `psmatch2` / `teffects` / `ebalance` / `ppmlhdfe` / `boottest` / `ritest` / `rwolf` / `psacalc` / `coefplot` / `esttab` / `outreg2` / `asdoc` / `binscatter`。8 步：(1) `use`+`import`+`destring`+`misstable`+`merge assert`+`xtset` 清洗 → (2) `winsor2`+`xtile`+`L./F./D./S.`+CPI 平减+staggered timing → (3) `tabstat`+`balancetable`+`asdoc`+`pwcorr sig star`+`heatplot` → (4) 12 类 estat 诊断 → (5) 12 类估计器（`reghdfe`+5 家 DID+4 类 RD+`synth`+`teffects`+`ebalance`+`heckman`+`qreg`+`ppmlhdfe`+`sem/gsem`）→ (6) `eststo`+`esttab` M1–M6+`boottest`+`ritest`+`rwolf`+`bacondecomp`+`honestdid`+`psacalc delta` → (7) factor-var+`margins`+`marginsplot`+`suest`+DDD+`medsem`+`khb`+SEM+Stata-Python 桥到 econml CATE → (8) `esttab`+`outreg2`+`asdoc` 出 `.tex/.rtf/.docx/.xlsx`，`coefplot`+`marginsplot`+`binscatter`+`rdplot`+`graph combine` 出 `.pdf`。**SKILL.md 主干 801 行 + 8 个深度 references 3500+ 行 + 完整 .do 骨架，按需加载** | 审稿人 / 合作者只接受 Stata 的复现包、研究生 Stata 课程、应用经济学顶刊（AER/QJE/JPE/ReStud）的标准 .do 流水线 |
 | **[Full Empirical Analysis Skill — R](skills/00.3-Full-empirical-analysis-skill_R/)** 📗 | **现代 tidyverse + fixest + Quarto 生态的显式 8 步闭环**（00.1 / 00.2 的 R 版，四联 skill 的最后一块）。一份 `install.packages(...)` 装齐 50+ 包，全程使用 R 现代事实标准：`dplyr` / `tidyr` / `haven` / `janitor` / `naniar` / `mice` / `validate` / `assertr` 处理数据；`fixest::feols/feglm/fepois` 一行实现 HD FE + 多向 cluster + IV；`did::att_gt` / `fixest::sunab` / `didimputation::did_imputation` / `synthdid` / `DIDmultiplegtDYN` / `bacondecomp` / `HonestDiD` 处理现代 DID；`rdrobust` / `rddensity` / `rdmulti` / `rdlocrand` 处理 RD；`Synth` / `gsynth` / `tidysynth` / `synthdid` 处理合成控制；`MatchIt` / `WeightIt` / `cobalt` / `ebal` 处理匹配；`grf::causal_forest` / `DoubleML` 处理 ML 因果；`mediation::mediate` + `medsens` / `lavaan::sem` 处理中介；`marginaleffects` 处理后估计；`modelsummary` / `kableExtra` / `gt` / `flextable` 出表；`ggplot2` + `iplot` + `binsreg` + `cowplot` + `patchwork` 出图。8 步 R 流水线 + **Quarto 一体化模板**（`.qmd` 同时容纳 narrative + 代码 + 表 + 图，`quarto render` 一键产出 PDF/HTML/Word）。**SKILL.md 主干 893 行 + 8 个深度 references 3700+ 行**，按需加载 | Quarto 复现报告、学术博客（distill / quarto blog）、研究生 R 课程、需要 marginaleffects + mediation Imai 敏感性 + grf CATE 全套现代后估计的研究 |
 | **[AER-Skills](skills/50-brycewang-aer-skills/)** 📕🔥 | **Top-5 经济学投稿专用 skill stack**（AER / AER:Insights / AEJ 全家桶），与 StatsPAI / 00.x "跑分析" 互补，专攻"写论文 + 投稿 + R&R"。**9 个 skill 全链路**：`aer-topic-selection`（选题路由 AER vs Insights vs AEJ）→ `aer-identification`（识别策略审计：现代 DiD / 弱 IV / 边界 RDD 避雷）→ `aer-robustness`（审稿人导向稳健性矩阵）→ `aer-introduction`（Keith Head 五段式 intro）→ `aer-tables-figures`（AER booktabs 排版）→ `aer-replication`（AEA Data and Code Availability Policy 复现包，openICPSR 合规）→ `aer-submission`（投稿 preflight：100 词 abstract、disclosure、cover letter）→ `aer-rebuttal`（R&R 回复信，针对*revised* manuscript）→ `aer-workflow`（总调度）。**identification-first** —— 先审识别策略，识别脆，再多 prose 也救不回来。覆盖 AER 100 词 abstract / AER:Insights 7000 词上限 / 45% desk rejection / AEA mandatory replication 等 Top-5 特定约束，通用 scientific-writing skill 一律不覆盖。**[`scripts/sync-aer-skills.sh`](scripts/sync-aer-skills.sh) + 周更 GH Actions 闭环自动从上游 [brycewang-stanford/AER-skills](https://github.com/brycewang-stanford/AER-skills) 同步**。**License: MIT** | 投稿 AER / AER:Insights / AEJ 全流程：选题路由 → 识别审计 → 写作 → 排版 → 复现包 → 投稿 → R&R 回复 |

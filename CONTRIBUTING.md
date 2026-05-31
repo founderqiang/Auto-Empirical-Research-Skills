@@ -8,7 +8,14 @@ We welcome contributions! Here's how you can help.
 
 1. Fork this repository
 2. Add the Skill entry in the appropriate category document under `docs/`
-3. Submit a Pull Request
+3. Run the local quality gate:
+
+```bash
+make catalog
+make validate
+```
+
+4. Submit a Pull Request
 
 Each Skill entry should include:
 
@@ -18,6 +25,10 @@ Each Skill entry should include:
 - **Workflow** (recommended): Step-by-step execution flow
 - **Install** (recommended): Installation command
 - **Use case** (recommended): What type of research it suits
+- **License**: Upstream license and any restrictions
+- **Local path**: Where the vendored skill lives under `skills/`
+
+The generated files [`catalog/skills.json`](catalog/skills.json) and [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) are rebuilt by `make catalog`; do not edit them manually.
 
 ### Fix Errors
 
@@ -32,6 +43,10 @@ If you used a Skill to complete empirical research, we'd love to hear about it i
 This catalog lists **open-source, self-contained skills** that researchers can install and run independently. To keep every listed skill independently runnable and license-clean, we **do not include** skills whose core functionality depends on a commercial product or proprietary/paid API (e.g. tools that require an account or paid service to work).
 
 This is not a quality judgment — such tools may be excellent. If a tool later ships a fully open, no-account, locally-runnable path (e.g. against open corpora), we're glad to revisit.
+
+## Quality Gate
+
+All pull requests should pass `make validate`. The check verifies required project files, local Markdown links, `SKILL.md` frontmatter, and generated catalog freshness. See [`docs/QUALITY_GATE.md`](docs/QUALITY_GATE.md) for details.
 
 ## Especially Welcome
 
