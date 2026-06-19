@@ -11873,16 +11873,26 @@
       "line_count": 77,
       "name": "web-research",
       "path": "skills/68-research-productivity-skills/web-research/SKILL.md"
+    },
+    {
+      "collection": "69-Paper-WorkFlow",
+      "exact_case": true,
+      "has_description": true,
+      "has_frontmatter": true,
+      "has_name": true,
+      "line_count": 209,
+      "name": "paper-workflow",
+      "path": "skills/69-Paper-WorkFlow/SKILL.md"
     }
   ],
   "schema_version": "1.0",
   "summary": {
     "duplicate_skill_names": 92,
-    "exact_case_skill_files": 1144,
+    "exact_case_skill_files": 1145,
     "missing_description": 4,
     "missing_frontmatter": 4,
     "non_exact_case_skill_files": 0,
     "over_500_lines": 91,
-    "skill_like_files": 1144
+    "skill_like_files": 1145
   }
 }

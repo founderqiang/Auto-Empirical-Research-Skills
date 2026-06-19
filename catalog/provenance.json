@@ -1019,18 +1019,33 @@
       "source_url": "https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/pull/21",
       "sync": "manual vendor snapshot",
       "vendored_commit": null
+    },
+    {
+      "commercial_use": "unknown",
+      "id": "69-Paper-WorkFlow",
+      "last_aers_review": "2026-05-31",
+      "license": "UNKNOWN - check upstream",
+      "license_file": null,
+      "origin": "vendored upstream",
+      "path": "skills/69-Paper-WorkFlow",
+      "security_review": "SECURITY-SCAN-REPORT.md",
+      "skill_count": 1,
+      "source_confidence": "low",
+      "source_url": "https://github.com/Paper/WorkFlow",
+      "sync": "manual vendor snapshot",
+      "vendored_commit": null
     }
   ],
   "generated_by": "scripts/build-provenance.py",
   "scan_date": "2026-05-31",
   "schema_version": "1.0",
   "summary": {
-    "collections": 68,
+    "collections": 69,
     "commercial_use": {
       "allowed": 35,
       "restricted": 2,
       "share-alike": 5,
-      "unknown": 26
+      "unknown": 27
     },
     "licenses": {
       "AGPL-3.0": 1,
@@ -1040,11 +1055,11 @@
       "MIT": 34,
       "MIT Non-Commercial": 1,
       "Mixed (per-skill; see folder)": 2,
-      "UNKNOWN - check upstream": 24
+      "UNKNOWN - check upstream": 25
     },
     "source_confidence": {
       "high": 38,
-      "low": 7,
+      "low": 8,
       "medium": 19,
       "unresolved": 4
     }
