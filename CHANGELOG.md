@@ -5,6 +5,22 @@ This is the project's narrative changelog. `README.md` keeps only a short
 
 ## Unreleased
 
+- (nothing yet — next up: [`docs/PLAN-2026-07.md`](docs/PLAN-2026-07.md) weeks 3–4)
+
+## 2026-07-02 — v2026.07 (first tagged release)
+
+Everything below this line up to the 2026-06-04 section shipped in
+[`v2026.07`](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/releases/tag/v2026.07),
+the project's first tagged release. Additional v2026.07 changes not itemized
+below: CI installs the scientific stack for the Paper-WorkFlow demo gate
+(validate-catalog had been red on `main` since 2026-06-26); both weekly
+upstream sync PRs were unblocked and merged (the StatsPAI sync restores the
+SkillOpt execution-gate card that upstream had condensed away); the
+Paper-WorkFlow submodule's competitive-rigor layer (29/29 executable gates)
+merged to its `main` with a drift-gated README rigor badge; headline counts
+were reconciled to **1,150 skills / 69 collections**; and debugging scratch
+files were removed from `demo-notebooks/`.
+
 - Expanded the methodological rigor coverage map from 11 to **13 method
   families**, adding end-to-end closure (taxonomy tag + eval scenario +
   numeric benchmark task) for **heterogeneous treatment effects (CATE)**
