@@ -16,6 +16,7 @@ build-*/--check pattern of the other generators.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import sys
 from pathlib import Path
@@ -25,6 +26,19 @@ import toml_compat
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "eval-harness" / "lib"))
 from checks import AUTO_CHECKS  # noqa: E402
+
+
+def _load_coverage_map():
+    """The coverage map owns the method-family roster (METHOD_ORDER); reuse it
+    so the snapshot and badge can never disagree with docs/RIGOR_COVERAGE.md."""
+    path = ROOT / "scripts" / "build-coverage-map.py"
+    spec = importlib.util.spec_from_file_location("aers_build_coverage_map", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+COVERAGE_MAP = _load_coverage_map()
 CATALOG = ROOT / "catalog" / "skills.json"
 PROVENANCE = ROOT / "catalog" / "provenance.json"
 ENRICHED = ROOT / "catalog" / "skills-enriched.json"
@@ -32,6 +46,7 @@ TOOLS = ROOT / "tools" / "tools.json"
 SCENARIO_DIR = ROOT / "eval-harness" / "scenarios"
 TASK_DIR = ROOT / "benchmark" / "tasks"
 OUT = ROOT / "docs" / "RELEASE_NOTES.md"
+BADGE_OUT = ROOT / "docs" / "badges" / "rigor-coverage.json"
 
 
 def load_json(path: Path) -> dict:
@@ -105,7 +120,7 @@ def build() -> str:
         "",
         "## Methodological rigor",
         "",
-        f"- Method families in the coverage map: **{len(methods)}** ([`RIGOR_COVERAGE.md`](RIGOR_COVERAGE.md))",
+        f"- Method families in the coverage map: **{len(COVERAGE_MAP.METHOD_ORDER)}** ([`RIGOR_COVERAGE.md`](RIGOR_COVERAGE.md))",
         f"- Eval scenarios: **{scen['scenarios']}** "
         f"({scen['rubric_items']} rubric items, {scen['auto_checks']} auto-checkable) "
         "([`../eval-harness/`](../eval-harness/README.md))",
@@ -145,6 +160,22 @@ def build() -> str:
     return "\n".join(lines)
 
 
+def build_badge() -> str:
+    """Shields.io endpoint JSON summarizing the rigor surface (README badge)."""
+    scen = scenario_stats()
+    bench = benchmark_stats()
+    payload = {
+        "schemaVersion": 1,
+        "label": "rigor",
+        "message": (
+            f"{len(COVERAGE_MAP.METHOD_ORDER)} method families · "
+            f"{bench['tasks']} benchmarks · {scen['scenarios']} evals"
+        ),
+        "color": "brightgreen",
+    }
+    return json.dumps(payload, indent=2) + "\n"
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -155,15 +186,24 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     content = build()
+    badge = build_badge()
     if args.check:
+        stale = []
         if not OUT.exists() or OUT.read_text(encoding="utf-8") != content:
-            print("docs/RELEASE_NOTES.md is stale. Regenerate with:", file=sys.stderr)
+            stale.append("docs/RELEASE_NOTES.md")
+        if not BADGE_OUT.exists() or BADGE_OUT.read_text(encoding="utf-8") != badge:
+            stale.append("docs/badges/rigor-coverage.json")
+        if stale:
+            print(f"{' and '.join(stale)} stale. Regenerate with:", file=sys.stderr)
             print("  python3 scripts/build-release-notes.py", file=sys.stderr)
             return 1
-        print("docs/RELEASE_NOTES.md is current.")
+        print("docs/RELEASE_NOTES.md and rigor badge are current.")
         return 0
     OUT.write_text(content, encoding="utf-8")
     print(f"Wrote {OUT.relative_to(ROOT)}")
+    BADGE_OUT.parent.mkdir(parents=True, exist_ok=True)
+    BADGE_OUT.write_text(badge, encoding="utf-8")
+    print(f"Wrote {BADGE_OUT.relative_to(ROOT)}")
     return 0
 
 

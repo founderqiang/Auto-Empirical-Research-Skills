@@ -5,6 +5,18 @@ This is the project's narrative changelog. `README.md` keeps only a short
 
 ## Unreleased
 
+- Added a generated **rigor coverage badge** (shields.io endpoint JSON at
+  [`docs/badges/rigor-coverage.json`](docs/badges/rigor-coverage.json), built
+  by `scripts/build-release-notes.py` and freshness-checked in `make
+  validate`) and wired it into all six locale READMEs. The badge and the
+  release snapshot now source the method-family roster from
+  `build-coverage-map.py`'s METHOD_ORDER, so they can never disagree with
+  [`docs/RIGOR_COVERAGE.md`](docs/RIGOR_COVERAGE.md).
+- Documented the **candidate grading protocol** in
+  [`docs/INTEROP.md`](docs/INTEROP.md) (Recipe C): step-by-step instructions
+  for grading any external agent against the numeric benchmark by dropping a
+  `results.json` into `benchmark/candidates/`, with the honesty checks
+  explained — groundwork for the AERS-vs-Econometrics-Agent comparison.
 - Expanded the methodological rigor coverage map from 13 to **15 method
   families**, adding end-to-end closure (taxonomy tag + eval scenario +
   numeric benchmark task) for **shift-share / Bartik IV**
