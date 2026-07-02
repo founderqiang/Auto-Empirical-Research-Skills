@@ -14,9 +14,9 @@ Paste this snapshot into the GitHub release body and add a hand-written
 
 ## Methodological rigor
 
-- Method families in the coverage map: **13** ([`RIGOR_COVERAGE.md`](RIGOR_COVERAGE.md))
-- Eval scenarios: **26** (138 rubric items, 122 auto-checkable) ([`../eval-harness/`](../eval-harness/README.md))
-- Benchmark tasks: **13** (70 gold checks, 58 required) ([`../benchmark/`](../benchmark/README.md))
+- Method families in the coverage map: **15** ([`RIGOR_COVERAGE.md`](RIGOR_COVERAGE.md))
+- Eval scenarios: **28** (148 rubric items, 132 auto-checkable) ([`../eval-harness/`](../eval-harness/README.md))
+- Benchmark tasks: **15** (84 gold checks, 70 required) ([`../benchmark/`](../benchmark/README.md))
 
 ### Method families (skills tagged)
 
@@ -31,12 +31,14 @@ Paste this snapshot into the GitHub release body and add a hand-written
 - `synthetic-control`: 10
 - `cate`: 8
 - `dml`: 8
+- `mediation`: 8
 - `survival`: 3
 - `quantile`: 2
+- `shift-share`: 1
 
 ### Eval scenarios by category
 
-- `causal-identification`: 14
+- `causal-identification`: 16
 - `citation-hygiene`: 1
 - `reproducibility`: 2
 - `research-integrity`: 1

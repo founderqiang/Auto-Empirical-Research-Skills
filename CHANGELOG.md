@@ -5,7 +5,21 @@ This is the project's narrative changelog. `README.md` keeps only a short
 
 ## Unreleased
 
-- (nothing yet — next up: [`docs/PLAN-2026-07.md`](docs/PLAN-2026-07.md) weeks 3–4)
+- Expanded the methodological rigor coverage map from 13 to **15 method
+  families**, adding end-to-end closure (taxonomy tag + eval scenario +
+  numeric benchmark task) for **shift-share / Bartik IV**
+  (`aer-shiftshare-identification` + `bartik-recovery`: a 12-region design
+  where OLS through the local demand shock is biased 1.157 vs true 0.5 and
+  only the share-times-shock instrument recovers it — the exclusion
+  restriction holds exactly in-sample by construction) and **causal
+  mediation** (`statspai-mediation-assumptions` + `mediation-recovery`: the
+  folk "control for the mediator" move flips the sign of the true +1 direct
+  effect to -2.76 under mediator-outcome confounding, while the
+  confounder-adjusted NDE/NIE decomposition recovers 1 + 3 = 4 exactly).
+  Eval/CI ratchet floors raised to lock in the coverage (28 scenarios /
+  132 auto-checks, 15 benchmark tasks), with construction-invariant unit
+  tests for both simulations and README stats synced across all six locales
+  (enforced by the rigor-stats gate).
 
 ## 2026-07-02 — v2026.07 (first tagged release)
 

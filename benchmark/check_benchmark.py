@@ -43,6 +43,8 @@ import bayesian  # noqa: E402
 import synth  # noqa: E402
 import cate  # noqa: E402
 import qte  # noqa: E402
+import bartik  # noqa: E402
+import mediation  # noqa: E402
 
 TASKS_DIR = Path(__file__).resolve().parent / "tasks"
 CANDIDATES_DIR = Path(__file__).resolve().parent / "candidates"
@@ -50,9 +52,11 @@ RESULTS_DIR = Path(__file__).resolve().parent / "results"
 
 SUPPORTED_TASK_IDS = {
     "bad-control-recovery",
+    "bartik-recovery",
     "bayesian-recovery",
     "card-iv-recovery",
     "cate-recovery",
+    "mediation-recovery",
     "qte-recovery",
     "did-staggered-recovery",
     "dml-recovery",
@@ -139,6 +143,8 @@ CANDIDATE_NUMERIC_FIELDS = {
     "synthetic-control-recovery": ("true_effect", "sc_effect", "naive_effect"),
     "cate-recovery": ("cate_low", "cate_high", "cate_gap", "ate_stratified", "naive_ate"),
     "qte-recovery": ("qte_50", "qte_90", "ate"),
+    "bartik-recovery": ("bartik_beta", "ols_beta", "first_stage_coef"),
+    "mediation-recovery": ("total_effect", "nde", "nie", "naive_direct"),
 }
 CANDIDATE_NUMERIC_MAP_FIELDS = {
     "lalonde-recovery": ("balance",),
@@ -464,6 +470,29 @@ def compute_truth(task: dict) -> dict:
             "qte_50": qte.qte_at(rows, 0.5),
             "qte_90": qte.qte_at(rows, 0.9),
             "ate": qte.ate(rows),
+        }
+    if task["id"] == "bartik-recovery":
+        data = ROOT / task["data"]
+        rows = bartik.load(data)
+        return {
+            "n": len(rows),
+            "true_beta": bartik.true_beta(rows),
+            "bartik_beta": bartik.bartik_beta(rows),
+            "ols_beta": bartik.ols_beta(rows),
+            "first_stage_coef": bartik.first_stage_coef(rows),
+        }
+    if task["id"] == "mediation-recovery":
+        data = ROOT / task["data"]
+        rows = mediation.load(data)
+        return {
+            "n": len(rows),
+            "true_total": mediation.true_total(rows),
+            "true_nde": mediation.true_nde(rows),
+            "true_nie": mediation.true_nie(rows),
+            "total_effect": mediation.total_effect(rows),
+            "nde": mediation.nde_hat(rows),
+            "nie": mediation.nie_hat(rows),
+            "naive_direct": mediation.naive_direct(rows),
         }
     raise ValueError(f"unknown task {task['id']}")
 

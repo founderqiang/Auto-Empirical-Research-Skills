@@ -27,6 +27,8 @@ import bayesian  # noqa: E402
 import synth  # noqa: E402
 import cate  # noqa: E402
 import qte  # noqa: E402
+import bartik  # noqa: E402
+import mediation  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 CAND = Path(__file__).resolve().parent / "candidates"
@@ -272,6 +274,41 @@ def qte_candidate(write_missing_data: bool = True) -> dict:
     }
 
 
+def bartik_candidate(write_missing_data: bool = True) -> dict:
+    data_path = ROOT / "benchmark" / "data" / "sim-bartik.csv"
+    if not data_path.exists():
+        if not write_missing_data:
+            raise FileNotFoundError(data_path)
+        bartik.write_csv(data_path)
+    rows = bartik.load(data_path)
+    return {
+        "task": "bartik-recovery",
+        "method": "Shift-share (Bartik) IV built from industry shares x national shocks vs naive OLS",
+        "n": len(rows),
+        "bartik_beta": round(bartik.bartik_beta(rows), 4),
+        "ols_beta": round(bartik.ols_beta(rows), 4),
+        "first_stage_coef": round(bartik.first_stage_coef(rows), 4),
+    }
+
+
+def mediation_candidate(write_missing_data: bool = True) -> dict:
+    data_path = ROOT / "benchmark" / "data" / "sim-mediation.csv"
+    if not data_path.exists():
+        if not write_missing_data:
+            raise FileNotFoundError(data_path)
+        mediation.write_csv(data_path)
+    rows = mediation.load(data_path)
+    return {
+        "task": "mediation-recovery",
+        "method": "NDE/NIE decomposition adjusting the mediator-outcome confounder vs naive Y~T+M",
+        "n": len(rows),
+        "total_effect": round(mediation.total_effect(rows), 4),
+        "nde": round(mediation.nde_hat(rows), 4),
+        "nie": round(mediation.nie_hat(rows), 4),
+        "naive_direct": round(mediation.naive_direct(rows), 4),
+    }
+
+
 def reference_candidates(write_missing_data: bool = True) -> list[tuple[Path, dict]]:
     return [
         (CAND / "reference-ols" / "results.json", lalonde_candidate()),
@@ -287,6 +324,8 @@ def reference_candidates(write_missing_data: bool = True) -> list[tuple[Path, di
         (CAND / "reference-synth" / "results.json", synth_candidate(write_missing_data)),
         (CAND / "reference-cate" / "results.json", cate_candidate(write_missing_data)),
         (CAND / "reference-qte" / "results.json", qte_candidate(write_missing_data)),
+        (CAND / "reference-bartik" / "results.json", bartik_candidate(write_missing_data)),
+        (CAND / "reference-mediation" / "results.json", mediation_candidate(write_missing_data)),
     ]
 
 
@@ -353,6 +392,16 @@ def print_summary(payloads: list[tuple[Path, dict]]) -> None:
     print(
         f"  QTE: mean {qt['ate']} vs q50 {qt['qte_50']} / q90 {qt['qte_90']} "
         f"(gains concentrate in the tail)"
+    )
+    bk = by_task["bartik-recovery"]
+    print(
+        f"  bartik: OLS {bk['ols_beta']} -> shift-share IV {bk['bartik_beta']} "
+        f"(first stage {bk['first_stage_coef']})"
+    )
+    md = by_task["mediation-recovery"]
+    print(
+        f"  mediation: naive Y~T+M {md['naive_direct']} -> NDE {md['nde']} + NIE {md['nie']} "
+        f"(total {md['total_effect']})"
     )
 
 

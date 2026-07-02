@@ -26,6 +26,8 @@ A family is **covered** when it has both an eval scenario and a benchmark task, 
 | Double/debiased ML | 8 | `statspai-dml-crossfit` (high) | `dml-recovery` | covered |
 | Heterogeneous effects (CATE) | 8 | `statspai-heterogeneous-effects` (high) | `cate-recovery` | covered |
 | Quantile / distributional effects | 2 | `statspai-quantile-effects` (high) | `qte-recovery` | covered |
+| Shift-share / Bartik IV | 1 | `aer-shiftshare-identification` (high) | `bartik-recovery` | covered |
+| Causal mediation | 8 | `statspai-mediation-assumptions` (high) | `mediation-recovery` | covered |
 | Bayesian methods | 13 | `baygent-bayesian-diagnostics` (high) | `bayesian-recovery` | covered |
 | Survival / duration | 3 | `statspai-survival-assumptions` (high) | `survival-recovery` | covered |
 
@@ -62,4 +64,4 @@ Non-method checks that gate the rest of the workflow (writing, citations, reprod
 
 ---
 
-_26 eval scenarios and 13 benchmark tasks across 13 method families; 12 families fully covered, 0 open gaps. Regenerate with `make catalog`._
+_28 eval scenarios and 15 benchmark tasks across 15 method families; 14 families fully covered, 0 open gaps. Regenerate with `make catalog`._

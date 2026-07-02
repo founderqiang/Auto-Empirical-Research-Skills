@@ -18,6 +18,8 @@ rdd = load_module("benchmark/lib/rdd.py", "aers_rdd")
 badcontrol = load_module("benchmark/lib/badcontrol.py", "aers_badcontrol")
 cate = load_module("benchmark/lib/cate.py", "aers_cate")
 qte = load_module("benchmark/lib/qte.py", "aers_qte")
+bartik = load_module("benchmark/lib/bartik.py", "aers_bartik")
+mediation = load_module("benchmark/lib/mediation.py", "aers_mediation")
 check_benchmark = load_module("benchmark/check_benchmark.py", "aers_check_benchmark")
 reference_pipeline = load_module("benchmark/reference_pipeline.py", "aers_reference_pipeline")
 toml_compat = load_module("scripts/toml_compat.py", "aers_toml_compat")
@@ -29,6 +31,8 @@ RDD_DATA = ROOT / "benchmark" / "data" / "sim-rdd.csv"
 BADCONTROL_DATA = ROOT / "benchmark" / "data" / "sim-badcontrol.csv"
 CATE_DATA = ROOT / "benchmark" / "data" / "sim-cate.csv"
 QTE_DATA = ROOT / "benchmark" / "data" / "sim-qte.csv"
+BARTIK_DATA = ROOT / "benchmark" / "data" / "sim-bartik.csv"
+MEDIATION_DATA = ROOT / "benchmark" / "data" / "sim-mediation.csv"
 
 
 class TestLalondeNumbers(unittest.TestCase):
@@ -731,6 +735,120 @@ class TestQteGrading(unittest.TestCase):
         self.assertIn("median-qte-is-zero", req_fail)
         self.assertIn("upper-tail-qte-recovered", req_fail)
         self.assertIn("mean-hides-tail", req_fail)
+
+
+class TestBartikNumbers(unittest.TestCase):
+    """Construction invariants for the shift-share simulation."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rows = bartik.load(BARTIK_DATA)
+
+    def test_exclusion_holds_in_sample(self):
+        # The local shock (x - z) is exactly orthogonal to the instrument.
+        z = bartik.instrument(self.rows)
+        eta = [float(r["x"]) - zi for r, zi in zip(self.rows, z)]
+        mz, me = sum(z) / len(z), sum(eta) / len(eta)
+        cov = sum((a - mz) * (b - me) for a, b in zip(z, eta)) / len(z)
+        self.assertAlmostEqual(cov, 0.0, delta=1e-9)
+
+    def test_true_beta_from_unread_column(self):
+        self.assertAlmostEqual(bartik.true_beta(self.rows), 0.5, delta=1e-9)
+
+    def test_iv_recovers_and_ols_is_biased(self):
+        self.assertAlmostEqual(bartik.bartik_beta(self.rows), 0.5, delta=1e-6)
+        self.assertGreater(abs(bartik.ols_beta(self.rows) - 0.5), 0.5)
+
+    def test_first_stage_is_unit_slope(self):
+        self.assertAlmostEqual(bartik.first_stage_coef(self.rows), 1.0, delta=1e-6)
+
+
+class TestBartikGrading(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        with (ROOT / "benchmark" / "tasks" / "bartik-recovery.toml").open("rb") as fh:
+            cls.task = toml_compat.load(fh)
+        cls.truth = check_benchmark.compute_truth(cls.task)
+
+    def _good(self):
+        rows = bartik.load(BARTIK_DATA)
+        return {
+            "bartik_beta": round(bartik.bartik_beta(rows), 4),
+            "ols_beta": round(bartik.ols_beta(rows), 4),
+            "first_stage_coef": round(bartik.first_stage_coef(rows), 4),
+        }
+
+    def test_reference_passes(self):
+        graded = check_benchmark.grade(self.task, self._good(), self.truth)
+        self.assertEqual([g["id"] for g in graded if g["required"] and not g["passed"]], [])
+
+    def test_headlining_ols_as_iv_fails(self):
+        # A candidate that skips instrument construction and reports OLS as the
+        # causal estimate is caught by the data recomputation.
+        cand = self._good()
+        cand["bartik_beta"] = cand["ols_beta"]
+        graded = check_benchmark.grade(self.task, cand, self.truth)
+        req_fail = [g["id"] for g in graded if g["required"] and not g["passed"]]
+        self.assertIn("bartik-recovers-true", req_fail)
+        self.assertIn("honest-bartik", req_fail)
+
+
+class TestMediationNumbers(unittest.TestCase):
+    """Construction invariants for the causal-mediation simulation."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rows = mediation.load(MEDIATION_DATA)
+
+    def test_true_decomposition_by_construction(self):
+        self.assertAlmostEqual(mediation.true_total(self.rows), 4.0, delta=1e-9)
+        self.assertAlmostEqual(mediation.true_nde(self.rows), 1.0, delta=1e-9)
+        self.assertAlmostEqual(mediation.true_nie(self.rows), 3.0, delta=1e-9)
+
+    def test_decomposition_adds_up(self):
+        total = mediation.true_nde(self.rows) + mediation.true_nie(self.rows)
+        self.assertAlmostEqual(total, mediation.true_total(self.rows), delta=1e-9)
+
+    def test_estimators_recover_truth_from_observed_columns_only(self):
+        self.assertAlmostEqual(mediation.total_effect(self.rows), 4.0, delta=1e-6)
+        self.assertAlmostEqual(mediation.nde_hat(self.rows), 1.0, delta=1e-6)
+        self.assertAlmostEqual(mediation.nie_hat(self.rows), 3.0, delta=1e-6)
+
+    def test_naive_mediator_control_flips_the_sign(self):
+        naive = mediation.naive_direct(self.rows)
+        self.assertLess(naive, 0)  # true direct effect is +1
+        self.assertGreater(abs(naive - 1.0), 2.0)
+
+
+class TestMediationGrading(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        with (ROOT / "benchmark" / "tasks" / "mediation-recovery.toml").open("rb") as fh:
+            cls.task = toml_compat.load(fh)
+        cls.truth = check_benchmark.compute_truth(cls.task)
+
+    def _good(self):
+        rows = mediation.load(MEDIATION_DATA)
+        return {
+            "total_effect": round(mediation.total_effect(rows), 4),
+            "nde": round(mediation.nde_hat(rows), 4),
+            "nie": round(mediation.nie_hat(rows), 4),
+            "naive_direct": round(mediation.naive_direct(rows), 4),
+        }
+
+    def test_reference_passes(self):
+        graded = check_benchmark.grade(self.task, self._good(), self.truth)
+        self.assertEqual([g["id"] for g in graded if g["required"] and not g["passed"]], [])
+
+    def test_headlining_naive_direct_as_nde_fails(self):
+        # A candidate that reports the Y~T+M coefficient as its direct effect
+        # (the folk move) is caught by the recomputation.
+        cand = self._good()
+        cand["nde"] = cand["naive_direct"]
+        graded = check_benchmark.grade(self.task, cand, self.truth)
+        req_fail = [g["id"] for g in graded if g["required"] and not g["passed"]]
+        self.assertIn("nde-recovered", req_fail)
+        self.assertIn("honest-nde", req_fail)
 
 
 if __name__ == "__main__":

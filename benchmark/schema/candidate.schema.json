@@ -4,12 +4,30 @@
   "title": "AERS benchmark candidate results",
   "description": "Schema for benchmark/candidates/<run-name>/results.json. benchmark/check_benchmark.py is the authoritative validator; this schema documents the task-specific numeric fields expected from candidate pipelines.",
   "type": "object",
-  "required": ["task"],
+  "required": [
+    "task"
+  ],
   "additionalProperties": true,
   "properties": {
     "task": {
       "type": "string",
-      "enum": ["bad-control-recovery", "bayesian-recovery", "card-iv-recovery", "cate-recovery", "did-staggered-recovery", "dml-recovery", "event-study-recovery", "lalonde-recovery", "panel-fe-recovery", "qte-recovery", "rdd-recovery", "survival-recovery", "synthetic-control-recovery"]
+      "enum": [
+        "bad-control-recovery",
+        "bartik-recovery",
+        "bayesian-recovery",
+        "card-iv-recovery",
+        "cate-recovery",
+        "did-staggered-recovery",
+        "dml-recovery",
+        "event-study-recovery",
+        "lalonde-recovery",
+        "mediation-recovery",
+        "panel-fe-recovery",
+        "qte-recovery",
+        "rdd-recovery",
+        "survival-recovery",
+        "synthetic-control-recovery"
+      ]
     },
     "method": {
       "type": "string"
@@ -134,9 +152,6 @@
     "sc_effect": {
       "type": "number"
     },
-    "naive_effect": {
-      "type": "number"
-    },
     "cate_low": {
       "type": "number"
     },
@@ -166,6 +181,24 @@
       "additionalProperties": {
         "type": "number"
       }
+    },
+    "bartik_beta": {
+      "type": "number"
+    },
+    "ols_beta": {
+      "type": "number"
+    },
+    "total_effect": {
+      "type": "number"
+    },
+    "nde": {
+      "type": "number"
+    },
+    "nie": {
+      "type": "number"
+    },
+    "naive_direct": {
+      "type": "number"
     }
   },
   "allOf": [
@@ -178,7 +211,12 @@
         }
       },
       "then": {
-        "required": ["ols_return", "iv_return", "first_stage_F", "first_stage_coef"]
+        "required": [
+          "ols_return",
+          "iv_return",
+          "first_stage_F",
+          "first_stage_coef"
+        ]
       }
     },
     {
@@ -190,7 +228,11 @@
         }
       },
       "then": {
-        "required": ["true_att", "twfe_att", "cs_att"]
+        "required": [
+          "true_att",
+          "twfe_att",
+          "cs_att"
+        ]
       }
     },
     {
@@ -202,7 +244,11 @@
         }
       },
       "then": {
-        "required": ["naive_att", "adjusted_att", "balance"]
+        "required": [
+          "naive_att",
+          "adjusted_att",
+          "balance"
+        ]
       }
     },
     {
@@ -214,7 +260,12 @@
         }
       },
       "then": {
-        "required": ["true_tau", "naive_jump", "global_att", "local_att"]
+        "required": [
+          "true_tau",
+          "naive_jump",
+          "global_att",
+          "local_att"
+        ]
       }
     },
     {
@@ -226,7 +277,12 @@
         }
       },
       "then": {
-        "required": ["true_total", "naive_effect", "good_control_effect", "bad_control_effect"]
+        "required": [
+          "true_total",
+          "naive_effect",
+          "good_control_effect",
+          "bad_control_effect"
+        ]
       }
     },
     {
@@ -238,7 +294,11 @@
         }
       },
       "then": {
-        "required": ["true_att", "twoway_fe_att", "pooled_att"]
+        "required": [
+          "true_att",
+          "twoway_fe_att",
+          "pooled_att"
+        ]
       }
     },
     {
@@ -250,7 +310,12 @@
         }
       },
       "then": {
-        "required": ["true_att", "es_att", "es_pre_max", "naive_before_after"]
+        "required": [
+          "true_att",
+          "es_att",
+          "es_pre_max",
+          "naive_before_after"
+        ]
       }
     },
     {
@@ -262,7 +327,11 @@
         }
       },
       "then": {
-        "required": ["true_theta", "dml_theta", "naive_theta"]
+        "required": [
+          "true_theta",
+          "dml_theta",
+          "naive_theta"
+        ]
       }
     },
     {
@@ -274,7 +343,14 @@
         }
       },
       "then": {
-        "required": ["true_surv_treat", "true_surv_control", "km_surv_treat", "km_surv_control", "naive_surv_treat", "naive_surv_control"]
+        "required": [
+          "true_surv_treat",
+          "true_surv_control",
+          "km_surv_treat",
+          "km_surv_control",
+          "naive_surv_treat",
+          "naive_surv_control"
+        ]
       }
     },
     {
@@ -286,7 +362,11 @@
         }
       },
       "then": {
-        "required": ["data_mean", "posterior_weak", "posterior_strong"]
+        "required": [
+          "data_mean",
+          "posterior_weak",
+          "posterior_strong"
+        ]
       }
     },
     {
@@ -298,7 +378,11 @@
         }
       },
       "then": {
-        "required": ["true_effect", "sc_effect", "naive_effect"]
+        "required": [
+          "true_effect",
+          "sc_effect",
+          "naive_effect"
+        ]
       }
     },
     {
@@ -310,7 +394,13 @@
         }
       },
       "then": {
-        "required": ["cate_low", "cate_high", "cate_gap", "ate_stratified", "naive_ate"]
+        "required": [
+          "cate_low",
+          "cate_high",
+          "cate_gap",
+          "ate_stratified",
+          "naive_ate"
+        ]
       }
     },
     {
@@ -322,7 +412,44 @@
         }
       },
       "then": {
-        "required": ["qte_50", "qte_90", "ate"]
+        "required": [
+          "qte_50",
+          "qte_90",
+          "ate"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "task": {
+            "const": "bartik-recovery"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "bartik_beta",
+          "ols_beta",
+          "first_stage_coef"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "task": {
+            "const": "mediation-recovery"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "total_effect",
+          "nde",
+          "nie",
+          "naive_direct"
+        ]
       }
     }
   ]

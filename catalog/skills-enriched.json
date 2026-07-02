@@ -7,7 +7,7 @@
     "with_frontmatter_description": 1146,
     "body_derived_description": 4,
     "no_description": 0,
-    "tagged": 563
+    "tagged": 565
   },
   "taxonomy": {
     "language": {
@@ -28,8 +28,10 @@
       "synthetic-control": 10,
       "cate": 8,
       "dml": 8,
+      "mediation": 8,
       "survival": 3,
-      "quantile": 2
+      "quantile": 2,
+      "shift-share": 1
     },
     "stage": {
       "analysis": 139,
@@ -118,6 +120,7 @@
           "cate",
           "dml",
           "event-study",
+          "mediation",
           "rdd"
         ],
         "stage": [
@@ -201,6 +204,7 @@
           "cate",
           "dml",
           "event-study",
+          "mediation",
           "panel-fe",
           "rdd",
           "synthetic-control"
@@ -4174,6 +4178,7 @@
           "did",
           "iv",
           "matching",
+          "mediation",
           "rdd",
           "synthetic-control"
         ],
@@ -5065,6 +5070,9 @@
       "description_source": "frontmatter",
       "has_references": false,
       "tags": {
+        "method": [
+          "mediation"
+        ],
         "stage": [
           "analysis"
         ]
@@ -5164,7 +5172,11 @@
       "description_effective": "Meta-analysis frameworks and methods for mediation studies",
       "description_source": "frontmatter",
       "has_references": false,
-      "tags": {},
+      "tags": {
+        "method": [
+          "mediation"
+        ]
+      },
       "quality_score": 92,
       "quality_flags": [
         "long-no-references"
@@ -18641,6 +18653,7 @@
           "did",
           "iv",
           "rdd",
+          "shift-share",
           "staggered-did",
           "synthetic-control"
         ],
@@ -20180,6 +20193,9 @@
         "language": [
           "r"
         ],
+        "method": [
+          "mediation"
+        ],
         "stage": [
           "analysis"
         ]
@@ -20275,7 +20291,11 @@
       "description_effective": "Implement Hayes PROCESS mediation and moderation models transparently via lavaan and bruceR, with bootstrap CIs, index of moderated mediation, Johnson-Neyman regions of significance, and APA-formatted output that matches familiar PROCESS tables. Maps model numbers (1-24) to inspectable lavaan syntax instead of black-box macros. Use when the user says \"PROCESS model,\" \"mediation,\" \"moderated mediation,\" \"conditional indirect effect,\" \"Hayes model,\" \"indirect effect,\" \"moderation,\" or when /analyze encounters a mediation/moderation hypothesis. Triggers on \"PROCESS,\" \"mediation,\" \"moderation,\" \"indirect effect,\" \"Hayes.\"",
       "description_source": "frontmatter",
       "has_references": true,
-      "tags": {},
+      "tags": {
+        "method": [
+          "mediation"
+        ]
+      },
       "quality_score": 100,
       "quality_flags": [],
       "license": "MIT",
@@ -20337,6 +20357,9 @@
       "description_source": "frontmatter",
       "has_references": true,
       "tags": {
+        "method": [
+          "mediation"
+        ],
         "stage": [
           "robustness",
           "submission",
