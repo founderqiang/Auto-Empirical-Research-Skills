@@ -36,6 +36,16 @@ files were removed from `demo-notebooks/`.
   `scripts/build-release-notes.py` via `make catalog`, freshness-checked in
   `make validate`), replacing the hand-filled stats template in
   [`docs/RELEASE.md`](docs/RELEASE.md).
+- Added a six-locale README rigor-stats consistency gate
+  (`scripts/check-readme-stats.py`, wired into `make validate` with unit
+  tests): the benchmark-task and eval-scenario counts in every README's
+  numbers table and trust-surface table must now match the committed TOMLs,
+  so rigor expansions can no longer ship with stale marketing numbers. The
+  gate immediately caught drift in all six locales (trust-surface rows still
+  said 5/11 tasks and 17/95 scenarios) — now fixed.
+- Added a feature-request issue template scoped to rigor coverage, catalog
+  tooling, docs, and CI (skill collections keep their own submission
+  template).
 - Published the July 2026 execution plan
   ([`docs/PLAN-2026-07.md`](docs/PLAN-2026-07.md)) with week-by-week
   milestones, linked from the roadmap.
