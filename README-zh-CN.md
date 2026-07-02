@@ -548,6 +548,7 @@ make check       # 完整 gate：validate + Python 编译 + 单元测试 + eval 
 
 叙事版更新日志已迁至 [**CHANGELOG.md**](CHANGELOG.md)。近期要点：
 
+- **2026-07** —— 发布首个 tagged release **v2026.07**；方法严谨性覆盖图扩到 **16 个方法族全闭环**（新增 CATE、分位数效应、Bartik 移位份额、因果中介、Oaxaca 分解，每族 eval 场景 + 数值基准双覆盖），基准扩到 **16 任务**、评测套件扩到 **29 场景 / 153 rubric**；上线机器生成的发布快照、rigor 覆盖徽章与六语 README 数字一致性门。
 - **2026-05** —— 收录 **AER-skills**（Top-5 经济学投稿套件，9 个 skill）并设周更上游同步；数值基准扩到 **5 个因果复原任务**、评测套件扩到 **17 场景 / 95 rubric**。
 - **2026-04** —— 完成 **52/52 安全基线**；交付四个全流程旗舰（**StatsPAI** + 显式 **Python / Stata / R**）；上线原创 **chinese-de-aigc** skill。
 - **更早** —— 从 43 个合集成长为覆盖 **119 仓库 / 23,000+ skill** 的精选地图；新增双语 README、学术数据 MCP 服务器与多代理系统。

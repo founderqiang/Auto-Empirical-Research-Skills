@@ -547,6 +547,7 @@ Newer vendored additions are tracked in [`catalog/provenance.json`](catalog/prov
 
 The narrative changelog has moved to [**CHANGELOG.md**](CHANGELOG.md). Recent highlights:
 
+- **2026-07** — Cut the first tagged release **v2026.07**; expanded the rigor coverage map to **16 method families with full closure** (added CATE, quantile effects, Bartik shift-share, causal mediation, and Oaxaca decomposition — each with both an eval scenario and a numeric benchmark), growing the benchmark to **16 tasks** and the eval harness to **29 scenarios / 153 rubric items**; shipped the machine-generated release snapshot, the rigor coverage badge, and a six-locale README stats consistency gate.
 - **2026-05** — Vendored **AER-skills** (top-5 economics submission stack, 9 skills) with weekly upstream sync; expanded the numeric benchmark to **5 causal-recovery tasks** and the eval harness to **17 scenarios / 95 rubric items**.
 - **2026-04** — Completed the **52/52 security baseline**; shipped the four full-pipeline flagships (**StatsPAI** + explicit **Python / Stata / R**); launched the original **chinese-de-aigc** skill.
 - **Earlier** — Grew from 43 collections to a curated map of **119 repos / 23,000+ skills**; added bilingual README, academic data MCP servers, and multi-agent systems.
