@@ -2,7 +2,7 @@
 
 This roadmap is scoped to making AERS a high-quality, high-trust GitHub project rather than just a large link collection.
 
-> **Current monthly execution plan:** [`PLAN-2026-07.md`](PLAN-2026-07.md) — week-by-week milestones for July 2026 (rigor coverage 11 → 13+ method families, release automation, ecosystem benchmarking, growth surface).
+> **Current monthly execution plan:** [`PLAN-2026-08.md`](PLAN-2026-08.md) — August 2026: end-to-end Card–Krueger replication scorecard, public benchmark scoreboard, bunching method family, link-triage automation. (July: [`PLAN-2026-07.md`](PLAN-2026-07.md), 13/15 complete.)
 
 ## Now
 
