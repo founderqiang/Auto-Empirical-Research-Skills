@@ -339,6 +339,16 @@ make check        # repo validation + unit tests + eval lint + numeric benchmark
 
 > **왜 DSL *과* 명시적 포트를 함께 두는가?** 원샷 DSL을 신뢰할 때는 StatsPAI를 사용하세요; 교육, 감사, 또는 모든 진단을 손수 교체해야 할 때는 00.1/00.2/00.3을 사용하세요. AER-skills는 그렇게 만든 올바른 분석을 합격선까지 끌어올립니다 — 이들은 *서로 다른* 문제를 풀며 조합 가능합니다.
 
+### 백문이 불여일견 — 플래그십 파이프라인의 실제 산출물
+
+아래 세 그림은 저장소에 커밋된 [Card 교육 수익률 복제 데모](demo-StatsPAI-skill/)(StatsPAI 파이프라인 1회 실행: 노트북·데이터·표·복제 패키지 포함)에서 그대로 가져온 것입니다. LaLonde의 4개 스택 비교(Python/R/Stata/StatsPAI)는 [`demo-notebooks/`](demo-notebooks/)에 있습니다.
+
+| 주요 계수 플롯 | 사양 곡선 | 민감도 대시보드 |
+|---|---|---|
+| ![주요 계수 플롯](demo-StatsPAI-skill/figures/fig3_coefplot_main.png) | ![사양 곡선](demo-StatsPAI-skill/figures/fig5_spec_curve.png) | ![민감도 대시보드](demo-StatsPAI-skill/figures/fig6_sensitivity_dashboard.png) |
+
+> 🔎 온라인 카탈로그(GitHub Pages, 빌드 불필요): **[스킬 검색](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/search.html)** · [도구 검색](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/tools-search.html) · [사이트 홈](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/)
+
 ---
 
 ## 여기서 시작 — 30초 안에 스킬 고르기

@@ -339,6 +339,16 @@ Four parallel implementations of the **same 8-step empirical loop** — *data cl
 
 > **Why a DSL *and* explicit ports?** Reach for StatsPAI when you trust the one-shot DSL; reach for 00.1/00.2/00.3 when you are teaching, auditing, or must swap every diagnostic by hand. AER-skills then takes a correct analysis to acceptance threshold — these solve *different* problems and compose.
 
+### Seeing is believing — real output from the flagship pipeline
+
+These three figures come straight from the committed [Card returns-to-schooling replication demo](demo-StatsPAI-skill/) (one StatsPAI pipeline run: notebook, data, tables, and replication package included); the LaLonde four-stack comparison (Python/R/Stata/StatsPAI) lives in [`demo-notebooks/`](demo-notebooks/).
+
+| Main coefficient plot | Specification curve | Sensitivity dashboard |
+|---|---|---|
+| ![Main coefficient plot](demo-StatsPAI-skill/figures/fig3_coefplot_main.png) | ![Specification curve](demo-StatsPAI-skill/figures/fig5_spec_curve.png) | ![Sensitivity dashboard](demo-StatsPAI-skill/figures/fig6_sensitivity_dashboard.png) |
+
+> 🔎 Browse the catalog online (GitHub Pages, zero build): **[Skill search](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/search.html)** · [Tools search](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/tools-search.html) · [Site home](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/)
+
 ---
 
 ## Start here — pick a skill in 30 seconds

@@ -341,6 +341,16 @@ make check        # 仓库校验 + 单元测试 + eval lint + 数值基准
 
 > **为什么既要 DSL 又要显式三件套？** 信任一键 DSL 时用 StatsPAI；做教学、审计、或要逐个替换诊断时用 00.1/00.2/00.3。AER-skills 再把一份正确的分析推到录用门槛 —— 它们解决的是*不同*问题，可以组合。
 
+### 眼见为实 —— 旗舰流水线的真实产出
+
+下面三张图直接来自仓库内已提交的 [Card 教育回报复现演示](demo-StatsPAI-skill/)（StatsPAI 一条流水线跑出，含 notebook、数据、表格与复现包）；LaLonde 的 Python/R/Stata/StatsPAI 四栈对照演示见 [`demo-notebooks/`](demo-notebooks/)。
+
+| 主估计系数图 | 规格曲线 | 敏感性仪表盘 |
+|---|---|---|
+| ![主估计系数图](demo-StatsPAI-skill/figures/fig3_coefplot_main.png) | ![规格曲线](demo-StatsPAI-skill/figures/fig5_spec_curve.png) | ![敏感性仪表盘](demo-StatsPAI-skill/figures/fig6_sensitivity_dashboard.png) |
+
+> 🔎 在线目录站（GitHub Pages，零构建）：**[技能搜索](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/search.html)** · [工具搜索](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/tools-search.html) · [站点首页](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/)
+
 ---
 
 ## 从这里开始 —— 30 秒选一个 skill

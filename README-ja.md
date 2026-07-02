@@ -339,6 +339,16 @@ make check        # repo validation + unit tests + eval lint + numeric benchmark
 
 > **なぜ DSL *と*明示的な移植版の両方が必要なのか?** ワンショットの DSL を信頼するときは StatsPAI を。教育・監査・各診断を手作業で差し替えなければならないときは 00.1/00.2/00.3 を選んでください。AER-skills はそのうえで、正しい分析を採択ラインまで押し上げます —— これらは*異なる*問題を解決し、互いに組み合わさります。
 
+### 百聞は一見にしかず —— 旗艦パイプラインの実際の出力
+
+以下の 3 つの図は、リポジトリにコミット済みの [Card 教育収益率の再現デモ](demo-StatsPAI-skill/)（StatsPAI パイプライン 1 回の実行: notebook・データ・表・再現パッケージ付き）からそのまま取ったものです。LaLonde の 4 スタック比較（Python/R/Stata/StatsPAI）は [`demo-notebooks/`](demo-notebooks/) にあります。
+
+| 主要係数プロット | スペシフィケーション・カーブ | 感度ダッシュボード |
+|---|---|---|
+| ![主要係数プロット](demo-StatsPAI-skill/figures/fig3_coefplot_main.png) | ![スペシフィケーション・カーブ](demo-StatsPAI-skill/figures/fig5_spec_curve.png) | ![感度ダッシュボード](demo-StatsPAI-skill/figures/fig6_sensitivity_dashboard.png) |
+
+> 🔎 オンラインカタログ（GitHub Pages、ビルド不要）: **[スキル検索](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/search.html)** · [ツール検索](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/tools-search.html) · [サイトホーム](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/)
+
 ---
 
 ## ここから始める — 30 秒でスキルを選ぶ
