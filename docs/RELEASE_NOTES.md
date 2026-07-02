@@ -20,15 +20,15 @@ Paste this snapshot into the GitHub release body and add a hand-written
 
 ### Method families (skills tagged)
 
-- `iv`: 28
-- `rdd`: 26
+- `iv`: 27
+- `rdd`: 25
 - `panel-fe`: 19
 - `staggered-did`: 17
 - `bayesian`: 13
-- `synthetic-control`: 11
 - `did`: 10
 - `event-study`: 10
 - `matching`: 10
+- `synthetic-control`: 10
 - `cate`: 8
 - `dml`: 8
 - `survival`: 3
