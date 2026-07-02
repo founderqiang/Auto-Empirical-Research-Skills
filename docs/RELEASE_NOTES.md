@@ -15,8 +15,8 @@ Paste this snapshot into the GitHub release body and add a hand-written
 ## Methodological rigor
 
 - Method families in the coverage map: **15** ([`RIGOR_COVERAGE.md`](RIGOR_COVERAGE.md))
-- Eval scenarios: **28** (148 rubric items, 132 auto-checkable) ([`../eval-harness/`](../eval-harness/README.md))
-- Benchmark tasks: **15** (84 gold checks, 70 required) ([`../benchmark/`](../benchmark/README.md))
+- Eval scenarios: **29** (153 rubric items, 137 auto-checkable) ([`../eval-harness/`](../eval-harness/README.md))
+- Benchmark tasks: **16** (94 gold checks, 80 required) ([`../benchmark/`](../benchmark/README.md))
 
 ### Method families (skills tagged)
 
@@ -43,7 +43,7 @@ Paste this snapshot into the GitHub release body and add a hand-written
 - `reproducibility`: 2
 - `research-integrity`: 1
 - `runtime-safety`: 1
-- `statistical-validity`: 2
+- `statistical-validity`: 3
 - `writing-compliance`: 3
 - `writing-style`: 2
 

@@ -54,6 +54,7 @@ TAXONOMY: dict[str, dict[str, list[str]]] = {
         "cate": [r"causal forest", r"meta-?learner", r"\bcate\b", r"heterogeneous (treatment )?effects?", r"policy tree", r"x-?learner", r"\bgrf\b"],
         "quantile": [r"quantile treatment", r"\bqte\b", r"quantile regression", r"\bqreg\b", r"\brifreg\b", r"unconditional quantile", r"distributional (treatment )?effects?"],
         "shift-share": [r"shift-?share", r"bartik"],
+        "decomposition": [r"oaxaca", r"blinder decomposition", r"kitagawa", r"\bdfl\b", r"dinardo[- ]fortin[- ]lemieux", r"gelbach", r"fairlie", r"(wage|earnings|gender|racial) gap decomposition", r"rif decomposition"],
         "mediation": [r"mediation", r"mediator", r"direct and indirect effects?", r"\bacme\b", r"natural (direct|indirect) effect"],
         "panel-fe": [r"panel data", r"fixed effects", r"reghdfe", r"within estimator"],
         "bayesian": [r"bayesian", r"\bmcmc\b", r"posterior", r"\bpymc\b"],

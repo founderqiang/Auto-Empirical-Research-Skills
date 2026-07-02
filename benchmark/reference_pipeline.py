@@ -28,6 +28,7 @@ import synth  # noqa: E402
 import cate  # noqa: E402
 import qte  # noqa: E402
 import bartik  # noqa: E402
+import oaxaca  # noqa: E402
 import mediation  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -309,6 +310,26 @@ def mediation_candidate(write_missing_data: bool = True) -> dict:
     }
 
 
+def oaxaca_candidate(write_missing_data: bool = True) -> dict:
+    data_path = ROOT / "benchmark" / "data" / "sim-oaxaca.csv"
+    if not data_path.exists():
+        if not write_missing_data:
+            raise FileNotFoundError(data_path)
+        oaxaca.write_csv(data_path)
+    rows = oaxaca.load(data_path)
+    return {
+        "task": "decomposition-recovery",
+        "method": "Twofold Oaxaca-Blinder under BOTH references (index-number problem surfaced) via exact within-group OLS",
+        "n": len(rows),
+        "gap": round(oaxaca.gap(rows), 4),
+        "explained_ref_a": round(oaxaca.explained(rows, "A"), 4),
+        "unexplained_ref_a": round(oaxaca.unexplained(rows, "A"), 4),
+        "explained_ref_b": round(oaxaca.explained(rows, "B"), 4),
+        "unexplained_ref_b": round(oaxaca.unexplained(rows, "B"), 4),
+        "explained_reference_swing": round(oaxaca.explained_reference_swing(rows), 4),
+    }
+
+
 def reference_candidates(write_missing_data: bool = True) -> list[tuple[Path, dict]]:
     return [
         (CAND / "reference-ols" / "results.json", lalonde_candidate()),
@@ -326,6 +347,7 @@ def reference_candidates(write_missing_data: bool = True) -> list[tuple[Path, di
         (CAND / "reference-qte" / "results.json", qte_candidate(write_missing_data)),
         (CAND / "reference-bartik" / "results.json", bartik_candidate(write_missing_data)),
         (CAND / "reference-mediation" / "results.json", mediation_candidate(write_missing_data)),
+        (CAND / "reference-oaxaca" / "results.json", oaxaca_candidate(write_missing_data)),
     ]
 
 
@@ -402,6 +424,11 @@ def print_summary(payloads: list[tuple[Path, dict]]) -> None:
     print(
         f"  mediation: naive Y~T+M {md['naive_direct']} -> NDE {md['nde']} + NIE {md['nie']} "
         f"(total {md['total_effect']})"
+    )
+    ox = by_task["decomposition-recovery"]
+    print(
+        f"  oaxaca: gap {ox['gap']} = explained {ox['explained_ref_a']} + unexplained "
+        f"{ox['unexplained_ref_a']} (ref A; explained swings to {ox['explained_ref_b']} under ref B)"
     )
 
 

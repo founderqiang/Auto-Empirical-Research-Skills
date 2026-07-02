@@ -17,6 +17,7 @@
         "bayesian-recovery",
         "card-iv-recovery",
         "cate-recovery",
+        "decomposition-recovery",
         "did-staggered-recovery",
         "dml-recovery",
         "event-study-recovery",
@@ -198,6 +199,24 @@
       "type": "number"
     },
     "naive_direct": {
+      "type": "number"
+    },
+    "gap": {
+      "type": "number"
+    },
+    "explained_ref_a": {
+      "type": "number"
+    },
+    "unexplained_ref_a": {
+      "type": "number"
+    },
+    "explained_ref_b": {
+      "type": "number"
+    },
+    "unexplained_ref_b": {
+      "type": "number"
+    },
+    "explained_reference_swing": {
       "type": "number"
     }
   },
@@ -449,6 +468,25 @@
           "nde",
           "nie",
           "naive_direct"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "task": {
+            "const": "decomposition-recovery"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "gap",
+          "explained_ref_a",
+          "unexplained_ref_a",
+          "explained_ref_b",
+          "unexplained_ref_b",
+          "explained_reference_swing"
         ]
       }
     }

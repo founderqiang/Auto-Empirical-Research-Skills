@@ -42,7 +42,7 @@ evals:
 # Distinct from `make evals` (the declarative flagship-evals prompt matrix).
 eval-harness:
 	python3 eval-harness/run_evals.py \
-		--min-scenarios 22 --min-auto-checks 106 \
+		--min-scenarios 23 --min-auto-checks 111 \
 		--expect-categories causal-identification,reproducibility,citation-hygiene,runtime-safety,research-integrity,writing-compliance,writing-style
 
 # Grade fixture candidates as a smoke test. The fixture set intentionally

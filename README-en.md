@@ -38,6 +38,7 @@
 [![Validate catalog](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/actions/workflows/validate-catalog.yml/badge.svg)](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/actions/workflows/validate-catalog.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/brycewang-stanford/Auto-Empirical-Research-Skills/badge)](https://scorecard.dev/viewer/?uri=github.com/brycewang-stanford/Auto-Empirical-Research-Skills)
 [![Security audit: 52/52 CLEAN](https://img.shields.io/badge/security%20audit-52%2F52%20CLEAN-brightgreen)](SECURITY-SCAN-REPORT.md)
+[![Rigor coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbrycewang-stanford%2FAuto-Empirical-Research-Skills%2Fmain%2Fdocs%2Fbadges%2Frigor-coverage.json)](docs/RIGOR_COVERAGE.md)
 [![Powered by StatsPAI](https://img.shields.io/badge/powered%20by-StatsPAI-orange)](https://github.com/brycewang-stanford/StatsPAI)
 
 ---
@@ -280,11 +281,11 @@ Numbers in this README are kept honest and disambiguated. "Vendored" means the f
 | Skills **vendored into this repo** and cataloged | **1,150** | [`catalog/skills.json`](catalog/skills.json) |
 | Vendored **collections** | **69** | [`catalog/skills.json`](catalog/skills.json) · [all 69 at a glance ↑](#all-69-skill-collections-at-a-glance) |
 | **First-party flagship** full-pipeline skills (StatsPAI DSL + explicit Python/Stata/R) | **4** | [`skills/00*`](skills/) |
-| Numeric **benchmark tasks** with gold values recomputed from data each run | **15** | [`benchmark/`](benchmark/) |
-| Behavioral **eval scenarios / rubric items** | **28 / 148** | [`eval-harness/`](eval-harness/) |
+| Numeric **benchmark tasks** with gold values recomputed from data each run | **16** | [`benchmark/`](benchmark/) |
+| Behavioral **eval scenarios / rubric items** | **29 / 153** | [`eval-harness/`](eval-harness/) |
 | Security audit of the **original baseline** (collections / files) | **52 / 2,940+**, 52/52 CLEAN | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
 | Curated **map of the wider ecosystem** | **23,000+ skills / 119 repos** | this README · [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
-| **Tools catalog** (`tools/`): causal/econometrics libraries, autonomous research agents, MCP servers, causal discovery, benchmark datasets | **335 tools / 6 categories** | [`tools/tools.json`](tools/tools.json) · [`tools/CATALOG.md`](tools/CATALOG.md) |
+| **Tools catalog** (`tools/`): causal/econometrics libraries, autonomous research agents, MCP servers, causal discovery, benchmark datasets | **334 tools / 6 categories** | [`tools/tools.json`](tools/tools.json) · [`tools/CATALOG.md`](tools/CATALOG.md) |
 
 > The security audit covered the original **52-collection / 2,940-file baseline (52/52 CLEAN)**. Skills vendored after that baseline are tracked in [`catalog/provenance.json`](catalog/provenance.json), [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md), and [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md); run `make audit` before relying on them in high-trust contexts.
 
@@ -369,8 +370,8 @@ Public-skill counts are easy to inflate, and recent studies show large skill ind
 
 | Layer | What it catches | Where |
 |---|---|---|
-| **Numeric benchmark** | Reported numbers that don't match truth recomputed from real data — the naive-DID sign trap, weak-IV without first-stage F, TWFE bias under staggered timing, RDD trend confound, post-treatment bad controls, omitted unit heterogeneity (panel FE), dynamic effects / pre-trends (event study), omitted-control bias under cross-fitting (DML), censoring (survival), prior sensitivity (Bayesian), pre-period donor fit (synthetic control), opposite-signed subgroup effects a pooled mean hides (CATE), and tail-only gains a mean-only report misses (QTE) | [`benchmark/`](benchmark/) · 15 tasks |
-| **Eval harness** | Prose-level failures: weak-IV false reassurance, staggered-DID TWFE misuse, fabricated citations, unsafe `curl \| bash` setup, multiple-testing abuse, AER compliance gaps | [`eval-harness/`](eval-harness/) · 28 scenarios / 148 rubric items |
+| **Numeric benchmark** | Reported numbers that don't match truth recomputed from real data — the naive-DID sign trap, weak-IV without first-stage F, TWFE bias under staggered timing, RDD trend confound, post-treatment bad controls, omitted unit heterogeneity (panel FE), dynamic effects / pre-trends (event study), omitted-control bias under cross-fitting (DML), censoring (survival), prior sensitivity (Bayesian), pre-period donor fit (synthetic control), opposite-signed subgroup effects a pooled mean hides (CATE), tail-only gains a mean-only report misses (QTE), local-shock confounding in a shift-share (Bartik) IV, mediator-as-control sign flips (mediation), and reference-dependent gap splits (Oaxaca-Blinder) | [`benchmark/`](benchmark/) · 16 tasks |
+| **Eval harness** | Prose-level failures: weak-IV false reassurance, staggered-DID TWFE misuse, fabricated citations, unsafe `curl \| bash` setup, multiple-testing abuse, AER compliance gaps | [`eval-harness/`](eval-harness/) · 29 scenarios / 153 rubric items |
 | **Security audit** | Pipe-to-shell, reverse shells, credential exfiltration, prompt injection across 13 risk categories — 6-phase, 40+ hook scripts reviewed by hand | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
 | **Provenance & license** | Unvendored sources, license risk, hygiene drift across all 1,150 cataloged skills | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) · [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
 | **CI & compatibility** | Catalog freshness, broken local links, GitHub Actions policy, Python 3.9 **and** 3.12 syntax floor | [`.github/workflows/`](.github/workflows/) · 6 workflows |
@@ -486,7 +487,7 @@ The first-party flagships ([StatsPAI](skills/00-Full-empirical-analysis-skill_St
 
 > Unlike the skills above, [`tools/`](tools/) catalogs the **software and services an agent (or researcher) actually invokes** — structured, license- and maintenance-aware, and wired into `make validate`. Source of truth: [`tools/tools.json`](tools/tools.json); browsable list: [`tools/CATALOG.md`](tools/CATALOG.md).
 
-**335 tools across 6 categories** (curated 2026-06):
+**334 tools across 6 categories** (curated 2026-06):
 
 - **Causal-inference / treatment-effect libraries (32)** — DoWhy · EconML · CausalML · DoubleML · CausalPy · causallib · grf · CATENets · TMLE family · Mendelian randomization …
 - **Econometrics / quasi-experimental libraries (170)** — panel FE · DiD (incl. modern/staggered) · event study · RDD · IV · synthetic control/SDID · matching & weighting · sensitivity (fixest · did · HonestDiD · rdrobust · synthdid · reghdfe · csdid · sdid · pyfixest · linearmodels …); **plus** spatial econometrics (spdep · PySAL/spreg · GeoDa), local projections/IRF & (S)VAR (lpirfs · vars · svars), survey weighting/MRP/raking (survey · samplics · balance), and meta-analysis (metafor · meta · netmeta · metan) — across R/Python/Stata/Julia.

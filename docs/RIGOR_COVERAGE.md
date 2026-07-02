@@ -28,12 +28,14 @@ A family is **covered** when it has both an eval scenario and a benchmark task, 
 | Quantile / distributional effects | 2 | `statspai-quantile-effects` (high) | `qte-recovery` | covered |
 | Shift-share / Bartik IV | 1 | `aer-shiftshare-identification` (high) | `bartik-recovery` | covered |
 | Causal mediation | 8 | `statspai-mediation-assumptions` (high) | `mediation-recovery` | covered |
+| Decomposition (Oaxaca-Blinder) | 0 | `statspai-decomposition` (high) | `decomposition-recovery` | covered |
 | Bayesian methods | 13 | `baygent-bayesian-diagnostics` (high) | `bayesian-recovery` | covered |
 | Survival / duration | 3 | `statspai-survival-assumptions` (high) | `survival-recovery` | covered |
 
 Notes:
 
 - **Difference-in-differences (2x2)** — 2x2 base case; the parallel-trends/pre-trends check lives under Event study, and staggered identification under Staggered DiD.
+- **Decomposition (Oaxaca-Blinder)** — Estimators (oaxaca, kitagawa_decompose, dfl_decompose, gelbach) ship in the StatsPAI runtime, but no vendored skill *description* advertises the family yet, so the tagged-skill count reads 0; the eval scenario and benchmark task still gate the method.
 
 ## Open gaps (skills exist, rigor check missing)
 
@@ -64,4 +66,4 @@ Non-method checks that gate the rest of the workflow (writing, citations, reprod
 
 ---
 
-_28 eval scenarios and 15 benchmark tasks across 15 method families; 14 families fully covered, 0 open gaps. Regenerate with `make catalog`._
+_29 eval scenarios and 16 benchmark tasks across 16 method families; 15 families fully covered, 0 open gaps. Regenerate with `make catalog`._

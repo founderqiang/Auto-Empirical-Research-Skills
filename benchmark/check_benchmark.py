@@ -45,6 +45,7 @@ import cate  # noqa: E402
 import qte  # noqa: E402
 import bartik  # noqa: E402
 import mediation  # noqa: E402
+import oaxaca  # noqa: E402
 
 TASKS_DIR = Path(__file__).resolve().parent / "tasks"
 CANDIDATES_DIR = Path(__file__).resolve().parent / "candidates"
@@ -53,6 +54,7 @@ RESULTS_DIR = Path(__file__).resolve().parent / "results"
 SUPPORTED_TASK_IDS = {
     "bad-control-recovery",
     "bartik-recovery",
+    "decomposition-recovery",
     "bayesian-recovery",
     "card-iv-recovery",
     "cate-recovery",
@@ -145,6 +147,10 @@ CANDIDATE_NUMERIC_FIELDS = {
     "qte-recovery": ("qte_50", "qte_90", "ate"),
     "bartik-recovery": ("bartik_beta", "ols_beta", "first_stage_coef"),
     "mediation-recovery": ("total_effect", "nde", "nie", "naive_direct"),
+    "decomposition-recovery": (
+        "gap", "explained_ref_a", "unexplained_ref_a",
+        "explained_ref_b", "unexplained_ref_b", "explained_reference_swing",
+    ),
 }
 CANDIDATE_NUMERIC_MAP_FIELDS = {
     "lalonde-recovery": ("balance",),
@@ -493,6 +499,24 @@ def compute_truth(task: dict) -> dict:
             "nde": mediation.nde_hat(rows),
             "nie": mediation.nie_hat(rows),
             "naive_direct": mediation.naive_direct(rows),
+        }
+    if task["id"] == "decomposition-recovery":
+        data = ROOT / task["data"]
+        rows = oaxaca.load(data)
+        return {
+            "n": len(rows),
+            "true_gap": oaxaca.gap(rows),
+            "true_explained_ref_a": oaxaca.explained(rows, "A"),
+            "true_unexplained_ref_a": oaxaca.unexplained(rows, "A"),
+            "true_explained_ref_b": oaxaca.explained(rows, "B"),
+            "true_unexplained_ref_b": oaxaca.unexplained(rows, "B"),
+            "true_explained_reference_swing": oaxaca.explained_reference_swing(rows),
+            "gap": oaxaca.gap(rows),
+            "explained_ref_a": oaxaca.explained(rows, "A"),
+            "unexplained_ref_a": oaxaca.unexplained(rows, "A"),
+            "explained_ref_b": oaxaca.explained(rows, "B"),
+            "unexplained_ref_b": oaxaca.unexplained(rows, "B"),
+            "explained_reference_swing": oaxaca.explained_reference_swing(rows),
         }
     raise ValueError(f"unknown task {task['id']}")
 

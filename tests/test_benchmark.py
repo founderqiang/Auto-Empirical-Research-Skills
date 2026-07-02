@@ -20,6 +20,7 @@ cate = load_module("benchmark/lib/cate.py", "aers_cate")
 qte = load_module("benchmark/lib/qte.py", "aers_qte")
 bartik = load_module("benchmark/lib/bartik.py", "aers_bartik")
 mediation = load_module("benchmark/lib/mediation.py", "aers_mediation")
+oaxaca = load_module("benchmark/lib/oaxaca.py", "aers_oaxaca")
 check_benchmark = load_module("benchmark/check_benchmark.py", "aers_check_benchmark")
 reference_pipeline = load_module("benchmark/reference_pipeline.py", "aers_reference_pipeline")
 toml_compat = load_module("scripts/toml_compat.py", "aers_toml_compat")
@@ -33,6 +34,7 @@ CATE_DATA = ROOT / "benchmark" / "data" / "sim-cate.csv"
 QTE_DATA = ROOT / "benchmark" / "data" / "sim-qte.csv"
 BARTIK_DATA = ROOT / "benchmark" / "data" / "sim-bartik.csv"
 MEDIATION_DATA = ROOT / "benchmark" / "data" / "sim-mediation.csv"
+OAXACA_DATA = ROOT / "benchmark" / "data" / "sim-oaxaca.csv"
 
 
 class TestLalondeNumbers(unittest.TestCase):
@@ -849,6 +851,93 @@ class TestMediationGrading(unittest.TestCase):
         req_fail = [g["id"] for g in graded if g["required"] and not g["passed"]]
         self.assertIn("nde-recovered", req_fail)
         self.assertIn("honest-nde", req_fail)
+
+
+class TestOaxacaNumbers(unittest.TestCase):
+    """Construction invariants for the Oaxaca-Blinder decomposition simulation."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rows = oaxaca.load(OAXACA_DATA)
+
+    def test_within_group_ols_is_exact(self):
+        # The design is noiseless and linear, so group OLS recovers the
+        # structural coefficients with zero error.
+        b0_a, b1_a = oaxaca.coefs(self.rows, "A")
+        b0_b, b1_b = oaxaca.coefs(self.rows, "B")
+        self.assertAlmostEqual(b0_a, 2.0, delta=1e-9)
+        self.assertAlmostEqual(b1_a, 2.0, delta=1e-9)
+        self.assertAlmostEqual(b0_b, 1.0, delta=1e-9)
+        self.assertAlmostEqual(b1_b, 1.5, delta=1e-9)
+
+    def test_gap_and_components_by_construction(self):
+        self.assertAlmostEqual(oaxaca.gap(self.rows), 5.5, delta=1e-9)
+        self.assertAlmostEqual(oaxaca.explained(self.rows, "A"), 4.0, delta=1e-9)
+        self.assertAlmostEqual(oaxaca.unexplained(self.rows, "A"), 1.5, delta=1e-9)
+        self.assertAlmostEqual(oaxaca.explained(self.rows, "B"), 3.0, delta=1e-9)
+        self.assertAlmostEqual(oaxaca.unexplained(self.rows, "B"), 2.5, delta=1e-9)
+
+    def test_adding_up_identity_holds_under_both_references(self):
+        for ref in ("A", "B"):
+            self.assertAlmostEqual(
+                oaxaca.explained(self.rows, ref) + oaxaca.unexplained(self.rows, ref),
+                oaxaca.gap(self.rows),
+                delta=1e-9,
+            )
+
+    def test_reference_swing_quantifies_index_number_problem(self):
+        self.assertAlmostEqual(oaxaca.explained_reference_swing(self.rows), 1.0, delta=1e-9)
+
+    def test_unexplained_is_well_below_the_raw_gap(self):
+        # Reading the whole gap as "discrimination" would be off by 2-4x here.
+        for ref in ("A", "B"):
+            self.assertLess(oaxaca.unexplained(self.rows, ref), oaxaca.gap(self.rows) - 2.5)
+
+
+class TestOaxacaGrading(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        with (ROOT / "benchmark" / "tasks" / "decomposition-recovery.toml").open("rb") as fh:
+            cls.task = toml_compat.load(fh)
+        cls.truth = check_benchmark.compute_truth(cls.task)
+
+    def _good(self):
+        rows = oaxaca.load(OAXACA_DATA)
+        return {
+            "gap": round(oaxaca.gap(rows), 4),
+            "explained_ref_a": round(oaxaca.explained(rows, "A"), 4),
+            "unexplained_ref_a": round(oaxaca.unexplained(rows, "A"), 4),
+            "explained_ref_b": round(oaxaca.explained(rows, "B"), 4),
+            "unexplained_ref_b": round(oaxaca.unexplained(rows, "B"), 4),
+            "explained_reference_swing": round(oaxaca.explained_reference_swing(rows), 4),
+        }
+
+    def test_reference_passes(self):
+        graded = check_benchmark.grade(self.task, self._good(), self.truth)
+        self.assertEqual([g["id"] for g in graded if g["required"] and not g["passed"]], [])
+
+    def test_single_reference_report_fails(self):
+        # A candidate that only computes the flattering reference and mirrors
+        # it into the other reference's fields is caught by the recomputation.
+        cand = self._good()
+        cand["explained_ref_b"] = cand["explained_ref_a"]
+        cand["unexplained_ref_b"] = cand["unexplained_ref_a"]
+        cand["explained_reference_swing"] = 0.0
+        graded = check_benchmark.grade(self.task, cand, self.truth)
+        req_fail = [g["id"] for g in graded if g["required"] and not g["passed"]]
+        self.assertIn("explained-ref-b-recovered", req_fail)
+        self.assertIn("reference-swing-surfaced", req_fail)
+        self.assertIn("honest-explained-ref-b", req_fail)
+
+    def test_calling_the_whole_gap_discrimination_fails(self):
+        # A candidate that reports the raw gap as the unexplained component
+        # trips both the recovery gold and the biased_away gold.
+        cand = self._good()
+        cand["unexplained_ref_b"] = cand["gap"]
+        graded = check_benchmark.grade(self.task, cand, self.truth)
+        req_fail = [g["id"] for g in graded if g["required"] and not g["passed"]]
+        self.assertIn("unexplained-ref-b-recovered", req_fail)
+        self.assertIn("gap-is-not-all-unexplained", req_fail)
 
 
 if __name__ == "__main__":

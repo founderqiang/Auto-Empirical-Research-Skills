@@ -46,6 +46,7 @@ METHOD_ORDER = [
     "quantile",
     "shift-share",
     "mediation",
+    "decomposition",
     "bayesian",
     "survival",
 ]
@@ -63,6 +64,7 @@ METHOD_LABEL = {
     "quantile": "Quantile / distributional effects",
     "shift-share": "Shift-share / Bartik IV",
     "mediation": "Causal mediation",
+    "decomposition": "Decomposition (Oaxaca-Blinder)",
     "bayesian": "Bayesian methods",
     "survival": "Survival / duration",
 }
@@ -84,6 +86,7 @@ SCENARIO_METHOD = {
     "statspai-quantile-effects": "quantile",
     "aer-shiftshare-identification": "shift-share",
     "statspai-mediation-assumptions": "mediation",
+    "statspai-decomposition": "decomposition",
     "baygent-bayesian-diagnostics": "bayesian",
     "statspai-survival-assumptions": "survival",
     "statspai-bad-controls": "*",
@@ -112,6 +115,7 @@ TASK_METHOD = {
     "qte-recovery": "quantile",
     "bartik-recovery": "shift-share",
     "mediation-recovery": "mediation",
+    "decomposition-recovery": "decomposition",
     "survival-recovery": "survival",
     "bayesian-recovery": "bayesian",
     "synthetic-control-recovery": "synthetic-control",
@@ -121,6 +125,7 @@ TASK_METHOD = {
 # Short notes where a family is defended indirectly by a sibling family.
 RELATED_NOTE = {
     "did": "2x2 base case; the parallel-trends/pre-trends check lives under Event study, and staggered identification under Staggered DiD.",
+    "decomposition": "Estimators (oaxaca, kitagawa_decompose, dfl_decompose, gelbach) ship in the StatsPAI runtime, but no vendored skill *description* advertises the family yet, so the tagged-skill count reads 0; the eval scenario and benchmark task still gate the method.",
 }
 
 

@@ -22,6 +22,7 @@
         "bayesian-recovery",
         "card-iv-recovery",
         "cate-recovery",
+        "decomposition-recovery",
         "did-staggered-recovery",
         "dml-recovery",
         "event-study-recovery",
