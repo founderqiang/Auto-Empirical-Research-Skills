@@ -349,6 +349,8 @@ make check        # 仓库校验 + 单元测试 + eval lint + 数值基准
 |---|---|---|
 | ![主估計係數圖](demo-StatsPAI-skill/figures/fig3_coefplot_main.png) | ![規格曲線](demo-StatsPAI-skill/figures/fig5_spec_curve.png) | ![敏感性儀表板](demo-StatsPAI-skill/figures/fig6_sensitivity_dashboard.png) |
 
+> 🧪 **端到端復現實證**：一條零依賴命令從 Card & Krueger (1994) 官方原始資料復現最低工資 DiD —— 波次均值逐位命中、Table 4 係數精確一致，復現評分器判定 **PERFECT**（三檔命中率 100%）。見 [`demo-notebooks/card-krueger-1994/`](demo-notebooks/card-krueger-1994/)。
+>
 > 🔎 線上目錄站（GitHub Pages，零建置）：**[技能搜尋](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/search.html)** · [工具搜尋](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/tools-search.html) · [站點首頁](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/)
 
 ---

@@ -347,6 +347,8 @@ These three figures come straight from the committed [Card returns-to-schooling 
 |---|---|---|
 | ![Main coefficient plot](demo-StatsPAI-skill/figures/fig3_coefplot_main.png) | ![Specification curve](demo-StatsPAI-skill/figures/fig5_spec_curve.png) | ![Sensitivity dashboard](demo-StatsPAI-skill/figures/fig6_sensitivity_dashboard.png) |
 
+> 🧪 **End-to-end replication, proven**: one zero-dependency command reproduces the Card & Krueger (1994) minimum-wage DiD from the official raw data — wave means match digit-for-digit, Table 4 coefficients exactly, and the replication scorer rates it **PERFECT** (100% on all three accuracy tiers). See [`demo-notebooks/card-krueger-1994/`](demo-notebooks/card-krueger-1994/).
+>
 > 🔎 Browse the catalog online (GitHub Pages, zero build): **[Skill search](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/search.html)** · [Tools search](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/tools-search.html) · [Site home](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/)
 
 ---

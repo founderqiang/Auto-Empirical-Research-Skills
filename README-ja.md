@@ -347,6 +347,8 @@ make check        # repo validation + unit tests + eval lint + numeric benchmark
 |---|---|---|
 | ![主要係数プロット](demo-StatsPAI-skill/figures/fig3_coefplot_main.png) | ![スペシフィケーション・カーブ](demo-StatsPAI-skill/figures/fig5_spec_curve.png) | ![感度ダッシュボード](demo-StatsPAI-skill/figures/fig6_sensitivity_dashboard.png) |
 
+> 🧪 **エンドツーエンド再現の実証**: 依存ゼロのコマンド 1 つで Card & Krueger (1994) の最低賃金 DiD を公式生データから再現 —— 波次平均は桁単位で一致、Table 4 の係数は完全一致、再現スコアラーの判定は **PERFECT**（3 段階すべて 100%）。[`demo-notebooks/card-krueger-1994/`](demo-notebooks/card-krueger-1994/) を参照。
+>
 > 🔎 オンラインカタログ（GitHub Pages、ビルド不要）: **[スキル検索](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/search.html)** · [ツール検索](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/tools-search.html) · [サイトホーム](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/)
 
 ---
