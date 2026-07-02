@@ -5,6 +5,24 @@ This is the project's narrative changelog. `README.md` keeps only a short
 
 ## Unreleased
 
+- Expanded the methodological rigor coverage map from 11 to **13 method
+  families**, adding end-to-end closure (taxonomy tag + eval scenario +
+  numeric benchmark task) for **heterogeneous treatment effects (CATE)**
+  (`statspai-heterogeneous-effects` + `cate-recovery`: opposite-signed
+  subgroup effects with a composition-biased pooled contrast) and
+  **quantile / distributional effects** (`statspai-quantile-effects` +
+  `qte-recovery`: a tail-only shift where the median QTE is 0 and the q90
+  QTE is 5x the mean effect). Eval-harness and CI ratchet floors were raised
+  to lock in the new coverage (26 scenarios / 122 auto-checks, 13 benchmark
+  tasks), with construction-invariant unit tests for both simulations.
+- Added a machine-generated release snapshot
+  ([`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md), built by
+  `scripts/build-release-notes.py` via `make catalog`, freshness-checked in
+  `make validate`), replacing the hand-filled stats template in
+  [`docs/RELEASE.md`](docs/RELEASE.md).
+- Published the July 2026 execution plan
+  ([`docs/PLAN-2026-07.md`](docs/PLAN-2026-07.md)) with week-by-week
+  milestones, linked from the roadmap.
 - Added two community-contributed collections (PRs #21/#22), bringing the repo to
   **1,144 vendored & cataloged skills / 68 collections**:
   [`67-econfin-workflow-toolkit`](skills/67-econfin-workflow-toolkit/) — an

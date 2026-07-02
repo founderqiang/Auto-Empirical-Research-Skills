@@ -2,6 +2,8 @@
 
 This roadmap is scoped to making AERS a high-quality, high-trust GitHub project rather than just a large link collection.
 
+> **Current monthly execution plan:** [`PLAN-2026-07.md`](PLAN-2026-07.md) — week-by-week milestones for July 2026 (rigor coverage 11 → 13+ method families, release automation, ecosystem benchmarking, growth surface).
+
 ## Now
 
 - Keep `catalog/skills.json` and `docs/SKILL_CATALOG.md` current.
