@@ -8,6 +8,7 @@ catalog:
 	python3 scripts/build-catalog-enrich.py
 	python3 scripts/build-tools-catalog.py
 	python3 scripts/build-coverage-map.py
+	python3 scripts/build-release-notes.py
 
 # Catalog/provenance/audit/eval freshness + repo link & frontmatter validation.
 validate:
@@ -23,6 +24,7 @@ validate:
 	python3 scripts/build-catalog-enrich.py --check
 	python3 scripts/build-tools-catalog.py --check
 	python3 scripts/build-coverage-map.py --check
+	python3 scripts/build-release-notes.py --check
 
 paper-workflow-check:
 	@if [ ! -f skills/69-Paper-WorkFlow/validate_skill.py ]; then \
@@ -39,7 +41,7 @@ evals:
 # Distinct from `make evals` (the declarative flagship-evals prompt matrix).
 eval-harness:
 	python3 eval-harness/run_evals.py \
-		--min-scenarios 18 --min-auto-checks 86 \
+		--min-scenarios 20 --min-auto-checks 96 \
 		--expect-categories causal-identification,reproducibility,citation-hygiene,runtime-safety,research-integrity,writing-compliance,writing-style
 
 # Grade fixture candidates as a smoke test. The fixture set intentionally
