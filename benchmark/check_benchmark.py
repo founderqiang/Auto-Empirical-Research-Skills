@@ -41,6 +41,8 @@ import dml  # noqa: E402
 import survival  # noqa: E402
 import bayesian  # noqa: E402
 import synth  # noqa: E402
+import cate  # noqa: E402
+import qte  # noqa: E402
 
 TASKS_DIR = Path(__file__).resolve().parent / "tasks"
 CANDIDATES_DIR = Path(__file__).resolve().parent / "candidates"
@@ -50,6 +52,8 @@ SUPPORTED_TASK_IDS = {
     "bad-control-recovery",
     "bayesian-recovery",
     "card-iv-recovery",
+    "cate-recovery",
+    "qte-recovery",
     "did-staggered-recovery",
     "dml-recovery",
     "event-study-recovery",
@@ -133,6 +137,8 @@ CANDIDATE_NUMERIC_FIELDS = {
     ),
     "bayesian-recovery": ("data_mean", "posterior_weak", "posterior_strong"),
     "synthetic-control-recovery": ("true_effect", "sc_effect", "naive_effect"),
+    "cate-recovery": ("cate_low", "cate_high", "cate_gap", "ate_stratified", "naive_ate"),
+    "qte-recovery": ("qte_50", "qte_90", "ate"),
 }
 CANDIDATE_NUMERIC_MAP_FIELDS = {
     "lalonde-recovery": ("balance",),
@@ -431,6 +437,33 @@ def compute_truth(task: dict) -> dict:
             "true_effect": synth.true_effect(rows),
             "sc_effect": synth.sc_effect(rows),
             "naive_effect": synth.naive_effect(rows),
+        }
+    if task["id"] == "cate-recovery":
+        data = ROOT / task["data"]
+        rows = cate.load(data)
+        return {
+            "n": len(rows),
+            "true_cate_low": cate.true_cate(rows, 0),
+            "true_cate_high": cate.true_cate(rows, 1),
+            "true_cate_gap": cate.true_cate_gap(rows),
+            "true_ate": cate.true_ate(rows),
+            "cate_low": cate.cate_hat(rows, 0),
+            "cate_high": cate.cate_hat(rows, 1),
+            "cate_gap": cate.cate_gap(rows),
+            "ate_stratified": cate.ate_stratified(rows),
+            "naive_ate": cate.naive_ate(rows),
+        }
+    if task["id"] == "qte-recovery":
+        data = ROOT / task["data"]
+        rows = qte.load(data)
+        return {
+            "n": len(rows),
+            "true_qte_50": qte.true_qte_at(rows, 0.5),
+            "true_qte_90": qte.true_qte_at(rows, 0.9),
+            "true_ate": qte.true_ate(rows),
+            "qte_50": qte.qte_at(rows, 0.5),
+            "qte_90": qte.qte_at(rows, 0.9),
+            "ate": qte.ate(rows),
         }
     raise ValueError(f"unknown task {task['id']}")
 

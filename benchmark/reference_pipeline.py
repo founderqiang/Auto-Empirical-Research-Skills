@@ -25,6 +25,8 @@ import dml  # noqa: E402
 import survival  # noqa: E402
 import bayesian  # noqa: E402
 import synth  # noqa: E402
+import cate  # noqa: E402
+import qte  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 CAND = Path(__file__).resolve().parent / "candidates"
@@ -234,6 +236,42 @@ def synth_candidate(write_missing_data: bool = True) -> dict:
     }
 
 
+def cate_candidate(write_missing_data: bool = True) -> dict:
+    data_path = ROOT / "benchmark" / "data" / "sim-cate.csv"
+    if not data_path.exists():
+        if not write_missing_data:
+            raise FileNotFoundError(data_path)
+        cate.write_csv(data_path)
+    rows = cate.load(data_path)
+    return {
+        "task": "cate-recovery",
+        "method": "Stratified conditional effects (CATE by x) vs naive pooled difference in means",
+        "n": len(rows),
+        "cate_low": round(cate.cate_hat(rows, 0), 4),
+        "cate_high": round(cate.cate_hat(rows, 1), 4),
+        "cate_gap": round(cate.cate_gap(rows), 4),
+        "ate_stratified": round(cate.ate_stratified(rows), 4),
+        "naive_ate": round(cate.naive_ate(rows), 4),
+    }
+
+
+def qte_candidate(write_missing_data: bool = True) -> dict:
+    data_path = ROOT / "benchmark" / "data" / "sim-qte.csv"
+    if not data_path.exists():
+        if not write_missing_data:
+            raise FileNotFoundError(data_path)
+        qte.write_csv(data_path)
+    rows = qte.load(data_path)
+    return {
+        "task": "qte-recovery",
+        "method": "Quantile treatment effects (q50, q90) alongside the mean effect in a randomized paired design",
+        "n": len(rows),
+        "qte_50": round(qte.qte_at(rows, 0.5), 4),
+        "qte_90": round(qte.qte_at(rows, 0.9), 4),
+        "ate": round(qte.ate(rows), 4),
+    }
+
+
 def reference_candidates(write_missing_data: bool = True) -> list[tuple[Path, dict]]:
     return [
         (CAND / "reference-ols" / "results.json", lalonde_candidate()),
@@ -247,6 +285,8 @@ def reference_candidates(write_missing_data: bool = True) -> list[tuple[Path, di
         (CAND / "reference-survival" / "results.json", survival_candidate(write_missing_data)),
         (CAND / "reference-bayesian" / "results.json", bayesian_candidate(write_missing_data)),
         (CAND / "reference-synth" / "results.json", synth_candidate(write_missing_data)),
+        (CAND / "reference-cate" / "results.json", cate_candidate(write_missing_data)),
+        (CAND / "reference-qte" / "results.json", qte_candidate(write_missing_data)),
     ]
 
 
@@ -303,6 +343,16 @@ def print_summary(payloads: list[tuple[Path, dict]]) -> None:
     print(
         f"  synthetic control: naive {sc['naive_effect']} -> SC {sc['sc_effect']} "
         f"(true {sc['true_effect']})"
+    )
+    ct = by_task["cate-recovery"]
+    print(
+        f"  CATE: naive pooled {ct['naive_ate']} -> stratified {ct['ate_stratified']} "
+        f"(low {ct['cate_low']}, high {ct['cate_high']})"
+    )
+    qt = by_task["qte-recovery"]
+    print(
+        f"  QTE: mean {qt['ate']} vs q50 {qt['qte_50']} / q90 {qt['qte_90']} "
+        f"(gains concentrate in the tail)"
     )
 
 

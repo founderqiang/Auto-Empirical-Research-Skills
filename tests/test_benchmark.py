@@ -16,6 +16,8 @@ card = load_module("benchmark/lib/card.py", "aers_card")
 simdid = load_module("benchmark/lib/simdid.py", "aers_simdid")
 rdd = load_module("benchmark/lib/rdd.py", "aers_rdd")
 badcontrol = load_module("benchmark/lib/badcontrol.py", "aers_badcontrol")
+cate = load_module("benchmark/lib/cate.py", "aers_cate")
+qte = load_module("benchmark/lib/qte.py", "aers_qte")
 check_benchmark = load_module("benchmark/check_benchmark.py", "aers_check_benchmark")
 reference_pipeline = load_module("benchmark/reference_pipeline.py", "aers_reference_pipeline")
 toml_compat = load_module("scripts/toml_compat.py", "aers_toml_compat")
@@ -25,6 +27,8 @@ CARD_DATA = ROOT / "demo-StatsPAI-skill" / "data" / "card.csv"
 SIMDID_DATA = ROOT / "benchmark" / "data" / "sim-staggered-did.csv"
 RDD_DATA = ROOT / "benchmark" / "data" / "sim-rdd.csv"
 BADCONTROL_DATA = ROOT / "benchmark" / "data" / "sim-badcontrol.csv"
+CATE_DATA = ROOT / "benchmark" / "data" / "sim-cate.csv"
+QTE_DATA = ROOT / "benchmark" / "data" / "sim-qte.csv"
 
 
 class TestLalondeNumbers(unittest.TestCase):
@@ -601,6 +605,132 @@ class TestBadControlGrading(unittest.TestCase):
         req_fail = [g["id"] for g in graded if g["required"] and not g["passed"]]
         self.assertIn("good-control-recovers-total", req_fail)
         self.assertIn("honest-reported-numbers", req_fail)
+
+
+class TestCateNumbers(unittest.TestCase):
+    """Construction invariants for the heterogeneous-effects simulation."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rows = cate.load(CATE_DATA)
+
+    def test_true_conditional_effects_by_construction(self):
+        self.assertAlmostEqual(cate.true_cate(self.rows, 0), -1.0, delta=1e-9)
+        self.assertAlmostEqual(cate.true_cate(self.rows, 1), 3.0, delta=1e-9)
+        self.assertAlmostEqual(cate.true_ate(self.rows), 1.0, delta=1e-9)
+
+    def test_stratified_estimator_recovers_truth_from_observed_y_only(self):
+        self.assertAlmostEqual(cate.cate_hat(self.rows, 0), -1.0, delta=1e-9)
+        self.assertAlmostEqual(cate.cate_hat(self.rows, 1), 3.0, delta=1e-9)
+        self.assertAlmostEqual(cate.ate_stratified(self.rows), 1.0, delta=1e-9)
+
+    def test_naive_pooled_contrast_is_composition_biased(self):
+        # Treatment share differs by stratum, so the pooled contrast lands on
+        # 3.0, far from the true ATE of 1.0.
+        self.assertAlmostEqual(cate.naive_ate(self.rows), 3.0, delta=1e-9)
+
+    def test_heterogeneity_gap_detects_the_sign_flip(self):
+        self.assertAlmostEqual(cate.cate_gap(self.rows), 4.0, delta=1e-9)
+        self.assertLess(cate.cate_hat(self.rows, 0), 0)
+        self.assertGreater(cate.cate_hat(self.rows, 1), 0)
+
+
+class TestCateGrading(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        with (ROOT / "benchmark" / "tasks" / "cate-recovery.toml").open("rb") as fh:
+            cls.task = toml_compat.load(fh)
+        cls.truth = check_benchmark.compute_truth(cls.task)
+
+    def _good(self):
+        rows = cate.load(CATE_DATA)
+        return {
+            "cate_low": round(cate.cate_hat(rows, 0), 4),
+            "cate_high": round(cate.cate_hat(rows, 1), 4),
+            "cate_gap": round(cate.cate_gap(rows), 4),
+            "ate_stratified": round(cate.ate_stratified(rows), 4),
+            "naive_ate": round(cate.naive_ate(rows), 4),
+        }
+
+    def test_reference_passes(self):
+        graded = check_benchmark.grade(self.task, self._good(), self.truth)
+        self.assertEqual([g["id"] for g in graded if g["required"] and not g["passed"]], [])
+
+    def test_headlining_pooled_number_as_average_fails(self):
+        # A candidate that reports the pooled contrast as its stratified average
+        # (the one-number-hides-everything failure) is caught by recomputation.
+        cand = self._good()
+        cand["ate_stratified"] = cand["naive_ate"]
+        graded = check_benchmark.grade(self.task, cand, self.truth)
+        req_fail = [g["id"] for g in graded if g["required"] and not g["passed"]]
+        self.assertIn("stratified-ate-recovers", req_fail)
+
+    def test_fabricated_subgroup_effect_fails_honesty_check(self):
+        cand = self._good()
+        cand["cate_low"] = 0.5  # claims the program helps the low type; data say -1
+        graded = check_benchmark.grade(self.task, cand, self.truth)
+        req_fail = [g["id"] for g in graded if g["required"] and not g["passed"]]
+        self.assertIn("cate-low-recovered", req_fail)
+        self.assertIn("honest-cate-low", req_fail)
+
+
+class TestQteNumbers(unittest.TestCase):
+    """Construction invariants for the quantile-treatment-effect simulation."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rows = qte.load(QTE_DATA)
+
+    def test_arms_share_untreated_distribution(self):
+        t = sorted(float(r["y0"]) for r in self.rows if round(float(r["treat"])) == 1)
+        c = sorted(float(r["y0"]) for r in self.rows if round(float(r["treat"])) == 0)
+        self.assertEqual(t, c)
+
+    def test_true_quantile_effects_by_construction(self):
+        self.assertAlmostEqual(qte.true_qte_at(self.rows, 0.5), 0.0, delta=1e-6)
+        self.assertAlmostEqual(qte.true_qte_at(self.rows, 0.9), 5.0, delta=1e-6)
+        self.assertAlmostEqual(qte.true_ate(self.rows), 1.0, delta=1e-9)
+
+    def test_estimators_recover_truth_from_observed_y_only(self):
+        self.assertAlmostEqual(qte.qte_at(self.rows, 0.5), 0.0, delta=1e-6)
+        self.assertAlmostEqual(qte.qte_at(self.rows, 0.9), 5.0, delta=1e-6)
+        self.assertAlmostEqual(qte.ate(self.rows), 1.0, delta=1e-9)
+
+    def test_mean_hides_the_tail(self):
+        # The whole point of the task: the q90 effect is 5x the mean effect.
+        self.assertGreaterEqual(qte.qte_at(self.rows, 0.9) - qte.ate(self.rows), 3.0)
+
+
+class TestQteGrading(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        with (ROOT / "benchmark" / "tasks" / "qte-recovery.toml").open("rb") as fh:
+            cls.task = toml_compat.load(fh)
+        cls.truth = check_benchmark.compute_truth(cls.task)
+
+    def _good(self):
+        rows = qte.load(QTE_DATA)
+        return {
+            "qte_50": round(qte.qte_at(rows, 0.5), 4),
+            "qte_90": round(qte.qte_at(rows, 0.9), 4),
+            "ate": round(qte.ate(rows), 4),
+        }
+
+    def test_reference_passes(self):
+        graded = check_benchmark.grade(self.task, self._good(), self.truth)
+        self.assertEqual([g["id"] for g in graded if g["required"] and not g["passed"]], [])
+
+    def test_mean_only_report_projected_onto_quantiles_fails(self):
+        # A candidate that pretends the effect is uniform (reports the mean at
+        # every quantile) contradicts the recomputed quantile effects.
+        cand = self._good()
+        cand["qte_50"] = cand["ate"]
+        cand["qte_90"] = cand["ate"]
+        graded = check_benchmark.grade(self.task, cand, self.truth)
+        req_fail = [g["id"] for g in graded if g["required"] and not g["passed"]]
+        self.assertIn("median-qte-is-zero", req_fail)
+        self.assertIn("upper-tail-qte-recovered", req_fail)
+        self.assertIn("mean-hides-tail", req_fail)
 
 
 if __name__ == "__main__":

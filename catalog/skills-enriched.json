@@ -23,11 +23,13 @@
       "staggered-did": 17,
       "bayesian": 13,
       "did": 10,
-      "dml": 10,
       "event-study": 10,
       "matching": 10,
       "synthetic-control": 10,
-      "survival": 3
+      "cate": 8,
+      "dml": 8,
+      "survival": 3,
+      "quantile": 2
     },
     "stage": {
       "analysis": 139,
@@ -69,6 +71,7 @@
           "stata"
         ],
         "method": [
+          "cate",
           "dml",
           "event-study",
           "iv",
@@ -112,6 +115,7 @@
         ],
         "method": [
           "bayesian",
+          "cate",
           "dml",
           "event-study",
           "rdd"
@@ -151,11 +155,13 @@
           "stata"
         ],
         "method": [
+          "cate",
           "dml",
           "event-study",
           "iv",
           "matching",
           "panel-fe",
+          "quantile",
           "rdd",
           "synthetic-control"
         ],
@@ -192,6 +198,7 @@
           "stata"
         ],
         "method": [
+          "cate",
           "dml",
           "event-study",
           "panel-fe",
@@ -1339,6 +1346,7 @@
       "has_references": true,
       "tags": {
         "method": [
+          "cate",
           "dml"
         ],
         "stage": [
@@ -3837,6 +3845,7 @@
           "iv",
           "matching",
           "panel-fe",
+          "quantile",
           "rdd",
           "survival"
         ],
@@ -7523,7 +7532,7 @@
           "python"
         ],
         "method": [
-          "dml"
+          "cate"
         ],
         "stage": [
           "analysis"
@@ -20371,7 +20380,7 @@
       "has_references": false,
       "tags": {
         "method": [
-          "dml",
+          "cate",
           "iv"
         ],
         "stage": [
@@ -21477,6 +21486,7 @@
       "has_references": true,
       "tags": {
         "method": [
+          "cate",
           "dml"
         ],
         "stage": [

@@ -23,7 +23,9 @@ A family is **covered** when it has both an eval scenario and a benchmark task, 
 | Panel fixed effects | 19 | `pyfixest-panel-clustering` (high) | `panel-fe-recovery` | covered |
 | Synthetic control | 10 | `statspai-synthetic-control` (high) | `synthetic-control-recovery` | covered |
 | Matching / propensity scores | 10 | `statspai-matching-overlap` (high) | `lalonde-recovery` | covered |
-| Double/debiased ML | 10 | `statspai-dml-crossfit` (high) | `dml-recovery` | covered |
+| Double/debiased ML | 8 | `statspai-dml-crossfit` (high) | `dml-recovery` | covered |
+| Heterogeneous effects (CATE) | 8 | `statspai-heterogeneous-effects` (high) | `cate-recovery` | covered |
+| Quantile / distributional effects | 2 | `statspai-quantile-effects` (high) | `qte-recovery` | covered |
 | Bayesian methods | 13 | `baygent-bayesian-diagnostics` (high) | `bayesian-recovery` | covered |
 | Survival / duration | 3 | `statspai-survival-assumptions` (high) | `survival-recovery` | covered |
 
@@ -60,4 +62,4 @@ Non-method checks that gate the rest of the workflow (writing, citations, reprod
 
 ---
 
-_24 eval scenarios and 11 benchmark tasks across 11 method families; 10 families fully covered, 0 open gaps. Regenerate with `make catalog`._
+_26 eval scenarios and 13 benchmark tasks across 13 method families; 12 families fully covered, 0 open gaps. Regenerate with `make catalog`._

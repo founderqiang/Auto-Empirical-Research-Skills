@@ -9,7 +9,7 @@
   "properties": {
     "task": {
       "type": "string",
-      "enum": ["bad-control-recovery", "bayesian-recovery", "card-iv-recovery", "did-staggered-recovery", "dml-recovery", "event-study-recovery", "lalonde-recovery", "panel-fe-recovery", "rdd-recovery", "survival-recovery", "synthetic-control-recovery"]
+      "enum": ["bad-control-recovery", "bayesian-recovery", "card-iv-recovery", "cate-recovery", "did-staggered-recovery", "dml-recovery", "event-study-recovery", "lalonde-recovery", "panel-fe-recovery", "qte-recovery", "rdd-recovery", "survival-recovery", "synthetic-control-recovery"]
     },
     "method": {
       "type": "string"
@@ -135,6 +135,30 @@
       "type": "number"
     },
     "naive_effect": {
+      "type": "number"
+    },
+    "cate_low": {
+      "type": "number"
+    },
+    "cate_high": {
+      "type": "number"
+    },
+    "cate_gap": {
+      "type": "number"
+    },
+    "ate_stratified": {
+      "type": "number"
+    },
+    "naive_ate": {
+      "type": "number"
+    },
+    "qte_50": {
+      "type": "number"
+    },
+    "qte_90": {
+      "type": "number"
+    },
+    "ate": {
       "type": "number"
     },
     "balance": {
@@ -275,6 +299,30 @@
       },
       "then": {
         "required": ["true_effect", "sc_effect", "naive_effect"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "task": {
+            "const": "cate-recovery"
+          }
+        }
+      },
+      "then": {
+        "required": ["cate_low", "cate_high", "cate_gap", "ate_stratified", "naive_ate"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "task": {
+            "const": "qte-recovery"
+          }
+        }
+      },
+      "then": {
+        "required": ["qte_50", "qte_90", "ate"]
       }
     }
   ]
