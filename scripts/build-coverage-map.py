@@ -65,6 +65,7 @@ METHOD_LABEL = {
     "shift-share": "Shift-share / Bartik IV",
     "mediation": "Causal mediation",
     "decomposition": "Decomposition (Oaxaca-Blinder)",
+    "bunching": "Bunching",
     "bayesian": "Bayesian methods",
     "survival": "Survival / duration",
 }
@@ -116,6 +117,7 @@ TASK_METHOD = {
     "bartik-recovery": "shift-share",
     "mediation-recovery": "mediation",
     "decomposition-recovery": "decomposition",
+    "bunching-recovery": "bunching",
     "survival-recovery": "survival",
     "bayesian-recovery": "bayesian",
     "synthetic-control-recovery": "synthetic-control",

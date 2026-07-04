@@ -19,6 +19,7 @@
       "enum": [
         "bad-control-recovery",
         "bartik-recovery",
+        "bunching-recovery",
         "bayesian-recovery",
         "card-iv-recovery",
         "cate-recovery",

@@ -21,6 +21,7 @@ qte = load_module("benchmark/lib/qte.py", "aers_qte")
 bartik = load_module("benchmark/lib/bartik.py", "aers_bartik")
 mediation = load_module("benchmark/lib/mediation.py", "aers_mediation")
 oaxaca = load_module("benchmark/lib/oaxaca.py", "aers_oaxaca")
+bunching = load_module("benchmark/lib/bunching.py", "aers_bunching")
 check_benchmark = load_module("benchmark/check_benchmark.py", "aers_check_benchmark")
 reference_pipeline = load_module("benchmark/reference_pipeline.py", "aers_reference_pipeline")
 toml_compat = load_module("scripts/toml_compat.py", "aers_toml_compat")
@@ -35,6 +36,7 @@ QTE_DATA = ROOT / "benchmark" / "data" / "sim-qte.csv"
 BARTIK_DATA = ROOT / "benchmark" / "data" / "sim-bartik.csv"
 MEDIATION_DATA = ROOT / "benchmark" / "data" / "sim-mediation.csv"
 OAXACA_DATA = ROOT / "benchmark" / "data" / "sim-oaxaca.csv"
+BUNCHING_DATA = ROOT / "benchmark" / "data" / "sim-bunching.csv"
 
 
 class TestLalondeNumbers(unittest.TestCase):
@@ -938,6 +940,84 @@ class TestOaxacaGrading(unittest.TestCase):
         req_fail = [g["id"] for g in graded if g["required"] and not g["passed"]]
         self.assertIn("unexplained-ref-b-recovered", req_fail)
         self.assertIn("gap-is-not-all-unexplained", req_fail)
+
+
+class TestBunchingNumbers(unittest.TestCase):
+    """Construction invariants for the kink-bunching simulation."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rows = bunching.load(BUNCHING_DATA)
+
+    def test_excess_mass_matches_known_bunch(self):
+        self.assertAlmostEqual(bunching.excess_mass(self.rows), 0.20, delta=1e-9)
+
+    def test_counterfactual_is_zero_at_kink(self):
+        self.assertAlmostEqual(bunching.counterfactual_density_at(self.rows, bunching.K), 0.0)
+
+    def test_observed_density_matches_data(self):
+        self.assertAlmostEqual(bunching.observed_density_at(self.rows, bunching.K), 0.20, delta=1e-9)
+
+    def test_observed_above_kink_is_depleted(self):
+        baseline_above = sum(
+            bunching.naive_density_at(self.rows, x)
+            for x in bunching.SUPPORT if x > bunching.K
+        )
+        # The counterfactual mass above K is below the baseline by at least
+        # the bunching share; the gold's min_gap of 0.01 requires that
+        # strict margin.
+        self.assertLess(bunching.observed_density_above(self.rows), baseline_above - 0.01)
+
+    def test_naive_quoting_baseline_is_wrong(self):
+        # The naive (no-kink) answer at K should be far from the observed mass.
+        naive = bunching.naive_density_at(self.rows, bunching.K)
+        obs = bunching.observed_density_at(self.rows, bunching.K)
+        self.assertGreater(abs(naive - obs), 0.1)
+
+
+class TestBunchingGrading(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        with (ROOT / "benchmark" / "tasks" / "bunching-recovery.toml").open("rb") as fh:
+            cls.task = toml_compat.load(fh)
+        cls.truth = check_benchmark.compute_truth(cls.task)
+
+    def _good(self):
+        rows = bunching.load(BUNCHING_DATA)
+        return {
+            "excess_mass": round(bunching.excess_mass(rows), 4),
+            "observed_at_K": round(bunching.observed_density_at(rows, bunching.K), 4),
+            "counterfactual_at_K": round(bunching.counterfactual_density_at(rows, bunching.K), 4),
+            "naive_at_K": round(bunching.naive_density_at(rows, bunching.K), 4),
+            "observed_above_K": round(bunching.observed_density_above(rows), 4),
+            "implied_elasticity": round(bunching.implied_elasticity(rows), 4),
+        }
+
+    def test_reference_passes(self):
+        graded = check_benchmark.grade(self.task, self._good(), self.truth)
+        self.assertEqual([g["id"] for g in graded if g["required"] and not g["passed"]], [])
+
+    def test_naive_quoting_baseline_fails(self):
+        # A candidate that quotes the unmodified baseline everywhere cannot
+        # recover the excess mass, the observed density at K, the zero
+        # counterfactual at K, or the depleted mass above K.
+        cand = {
+            "excess_mass": 0.0,
+            "observed_at_K": 0.0476,
+            "counterfactual_at_K": 0.0476,
+            "naive_at_K": 0.0476,
+            "observed_above_K": 0.6944,
+            "implied_elasticity": 0.0,
+        }
+        graded = check_benchmark.grade(self.task, cand, self.truth)
+        req_fail = [g["id"] for g in graded if g["required"] and not g["passed"]]
+        self.assertIn("excess-mass-recovered", req_fail)
+        self.assertIn("observed-density-at-kink", req_fail)
+        self.assertIn("counterfactual-density-at-kink", req_fail)
+        self.assertIn("above-kink-depleted", req_fail)
+        # Reporting the counterfactual density at K equal to the observed
+        # spike is the diagnostic error the gold catches.
+        self.assertNotIn("counterfactual-density-at-kink", [g["id"] for g in graded if g["passed"]])
 
 
 if __name__ == "__main__":

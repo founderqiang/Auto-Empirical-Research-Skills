@@ -56,6 +56,7 @@ TAXONOMY: dict[str, dict[str, list[str]]] = {
         "shift-share": [r"shift-?share", r"bartik"],
         "decomposition": [r"oaxaca", r"blinder decomposition", r"kitagawa", r"\bdfl\b", r"dinardo[- ]fortin[- ]lemieux", r"gelbach", r"fairlie", r"(wage|earnings|gender|racial) gap decomposition", r"rif decomposition"],
         "mediation": [r"mediation", r"mediator", r"direct and indirect effects?", r"\bacme\b", r"natural (direct|indirect) effect"],
+        "bunching": [r"\bbunching\b", r"excess mass", r"kink point", r"\bnotch(es| point| point)\b", r"counterfactual density", r"\bsaez\b.{0,30}(2010|2012)", r"\bchetty\b.{0,30}(2009|2011)"],
         "panel-fe": [r"panel data", r"fixed effects", r"reghdfe", r"within estimator"],
         "bayesian": [r"bayesian", r"\bmcmc\b", r"posterior", r"\bpymc\b"],
         "survival": [r"survival analysis", r"kaplan[- ]meier", r"cox proportional", r"hazard model"],

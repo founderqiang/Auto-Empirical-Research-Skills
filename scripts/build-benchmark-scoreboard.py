@@ -103,6 +103,11 @@ NAIVE_BUILDERS = {
         "gap": r["gap"], "explained_ref_a": 0.0, "unexplained_ref_a": r["gap"],
         "explained_ref_b": 0.0, "unexplained_ref_b": r["gap"],
         "explained_reference_swing": 0.0},
+    "bunching-recovery": lambda r: {
+        "excess_mass": 0.0, "observed_at_K": r["naive_at_K"],
+        "counterfactual_at_K": r["naive_at_K"], "naive_at_K": r["naive_at_K"],
+        "observed_above_K": r["naive_above_K_total"],
+        "implied_elasticity": 0.0},
 }
 
 NAIVE_MOVE = {
@@ -122,6 +127,7 @@ NAIVE_MOVE = {
     "bartik-recovery": "regresses outcome on endogenous growth; no instrument",
     "mediation-recovery": "controls the mediator and headlines the coefficient",
     "decomposition-recovery": "reads the entire gap as the unexplained component",
+    "bunching-recovery": "quotes the unmodified baseline at every support point - no kink recognized",
 }
 
 

@@ -46,6 +46,7 @@ import qte  # noqa: E402
 import bartik  # noqa: E402
 import mediation  # noqa: E402
 import oaxaca  # noqa: E402
+import bunching  # noqa: E402
 
 TASKS_DIR = Path(__file__).resolve().parent / "tasks"
 CANDIDATES_DIR = Path(__file__).resolve().parent / "candidates"
@@ -54,6 +55,7 @@ RESULTS_DIR = Path(__file__).resolve().parent / "results"
 SUPPORTED_TASK_IDS = {
     "bad-control-recovery",
     "bartik-recovery",
+    "bunching-recovery",
     "decomposition-recovery",
     "bayesian-recovery",
     "card-iv-recovery",
@@ -150,6 +152,10 @@ CANDIDATE_NUMERIC_FIELDS = {
     "decomposition-recovery": (
         "gap", "explained_ref_a", "unexplained_ref_a",
         "explained_ref_b", "unexplained_ref_b", "explained_reference_swing",
+    ),
+    "bunching-recovery": (
+        "excess_mass", "observed_at_K", "counterfactual_at_K",
+        "naive_at_K", "observed_above_K", "implied_elasticity",
     ),
 }
 CANDIDATE_NUMERIC_MAP_FIELDS = {
@@ -517,6 +523,25 @@ def compute_truth(task: dict) -> dict:
             "explained_ref_b": oaxaca.explained(rows, "B"),
             "unexplained_ref_b": oaxaca.unexplained(rows, "B"),
             "explained_reference_swing": oaxaca.explained_reference_swing(rows),
+        }
+    if task["id"] == "bunching-recovery":
+        data = ROOT / task["data"]
+        rows = bunching.load(data)
+        baseline_share_above = sum(
+            bunching.naive_density_at(rows, x) for x in bunching.SUPPORT if x > bunching.K
+        )
+        return {
+            "n": len(rows),
+            "true_excess_mass": bunching.excess_mass(rows),
+            "true_observed_density_at_K": bunching.observed_density_at(rows, bunching.K),
+            "true_counterfactual_density_at_K": bunching.counterfactual_density_at(rows, bunching.K),
+            "true_baseline_share_above_K": baseline_share_above,
+            "excess_mass": bunching.excess_mass(rows),
+            "observed_at_K": bunching.observed_density_at(rows, bunching.K),
+            "counterfactual_at_K": bunching.counterfactual_density_at(rows, bunching.K),
+            "naive_at_K": bunching.naive_density_at(rows, bunching.K),
+            "observed_above_K": bunching.observed_density_above(rows),
+            "implied_elasticity": bunching.implied_elasticity(rows),
         }
     raise ValueError(f"unknown task {task['id']}")
 

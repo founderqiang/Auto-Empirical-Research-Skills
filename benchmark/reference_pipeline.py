@@ -29,6 +29,7 @@ import cate  # noqa: E402
 import qte  # noqa: E402
 import bartik  # noqa: E402
 import oaxaca  # noqa: E402
+import bunching  # noqa: E402
 import mediation  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -330,6 +331,30 @@ def oaxaca_candidate(write_missing_data: bool = True) -> dict:
     }
 
 
+def bunching_candidate(write_missing_data: bool = True) -> dict:
+    data_path = ROOT / "benchmark" / "data" / "sim-bunching.csv"
+    if not data_path.exists():
+        if not write_missing_data:
+            raise FileNotFoundError(data_path)
+        bunching.write_csv(data_path)
+    rows = bunching.load(data_path)
+    naive_above_K_total = sum(
+        bunching.naive_density_at(rows, x) for x in bunching.SUPPORT if x > bunching.K
+    )
+    return {
+        "task": "bunching-recovery",
+        "method": "Excess mass at kink K=10 with counterfactual re-normalization of the baseline density (B=0.20)",
+        "n": len(rows),
+        "excess_mass": round(bunching.excess_mass(rows), 4),
+        "observed_at_K": round(bunching.observed_density_at(rows, bunching.K), 4),
+        "counterfactual_at_K": round(bunching.counterfactual_density_at(rows, bunching.K), 4),
+        "naive_at_K": round(bunching.naive_density_at(rows, bunching.K), 4),
+        "observed_above_K": round(bunching.observed_density_above(rows), 4),
+        "implied_elasticity": round(bunching.implied_elasticity(rows), 4),
+        "naive_above_K_total": round(naive_above_K_total, 4),
+    }
+
+
 def reference_candidates(write_missing_data: bool = True) -> list[tuple[Path, dict]]:
     return [
         (CAND / "reference-ols" / "results.json", lalonde_candidate()),
@@ -348,6 +373,7 @@ def reference_candidates(write_missing_data: bool = True) -> list[tuple[Path, di
         (CAND / "reference-bartik" / "results.json", bartik_candidate(write_missing_data)),
         (CAND / "reference-mediation" / "results.json", mediation_candidate(write_missing_data)),
         (CAND / "reference-oaxaca" / "results.json", oaxaca_candidate(write_missing_data)),
+        (CAND / "reference-bunching" / "results.json", bunching_candidate(write_missing_data)),
     ]
 
 
