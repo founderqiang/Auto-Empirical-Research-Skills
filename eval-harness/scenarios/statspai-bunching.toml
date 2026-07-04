@@ -24,7 +24,7 @@ patterns = [
   '(?i)excess mass',
   '(?i)\\bbunching mass\\b',
   '(?i)integrated (density )?gap',
-  '(?i)b0?\\s*-\\s*b0?\\^?c',
+  '(?i)b0?\\s*-\\s*b0?\\^[c]',
 ]
 
 [[rubric]]
