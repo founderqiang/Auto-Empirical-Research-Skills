@@ -9,6 +9,7 @@ catalog:
 	python3 scripts/build-tools-catalog.py
 	python3 scripts/build-coverage-map.py
 	python3 scripts/build-release-notes.py
+	python3 scripts/build-benchmark-scoreboard.py
 
 # Catalog/provenance/audit/eval freshness + repo link & frontmatter validation.
 validate:
@@ -26,6 +27,7 @@ validate:
 	python3 scripts/build-tools-catalog.py --check
 	python3 scripts/build-coverage-map.py --check
 	python3 scripts/build-release-notes.py --check
+	python3 scripts/build-benchmark-scoreboard.py --check
 
 paper-workflow-check:
 	@if [ ! -f skills/69-Paper-WorkFlow/validate_skill.py ]; then \
