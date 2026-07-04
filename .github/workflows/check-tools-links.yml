@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
   tools-links:
@@ -26,7 +27,17 @@ jobs:
           python-version: "3.11"
 
       - name: Check tools-catalog links
-        run: make tools-links
+        id: check
+        run: |
+          set +e
+          make tools-links
+          rc=$?
+          set -e
+          echo "exit=$rc" >> "$GITHUB_OUTPUT"
+
+      - name: Build link-triage note
+        if: steps.check.outputs.exit != '0'
+        run: python3 scripts/build-link-triage.py --out docs/LINK_TRIAGE.md
 
       - name: Upload tools link-check report
         if: always()
@@ -34,3 +45,43 @@ jobs:
         with:
           name: tools-link-check
           path: catalog/tools-link-check.json
+
+      - name: Upload triage artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: tools-link-triage
+          path: docs/LINK_TRIAGE.md
+
+  triage-issue:
+    if: failure()
+    needs: tools-links
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Open tools-link-triage issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `[link-triage] Tools-catalog link check failed (${new Date().toISOString().slice(0,10)})`;
+            const body = require('fs').readFileSync('docs/LINK_TRIAGE.md', 'utf8');
+            const marker = '[link-triage] Tools-catalog link check failed';
+            const { data } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 20
+            });
+            const existing = data.find(i => i.title.startsWith(marker));
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: existing.number, body
+              });
+              core.info(`updated existing triage issue #${existing.number}`);
+            } else {
+              const issue = await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title, body, labels: ['link-triage']
+              });
+              core.info(`opened new triage issue #${issue.data.number}`);
+            }
