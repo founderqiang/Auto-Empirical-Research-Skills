@@ -38,7 +38,7 @@ patterns = [
   '(?i)counter.?factual',
   '(?i)polynomial fit',
   '(?i)kde|kernel (density )?estimate',
-  '(?i)re.?normaliz(e|ed|ation)',
+  '(?i)re[- ]?normaliz(e|ed|ation)',
   '(?i)neighboring support|surrounding (support|points)',
 ]
 
