@@ -1,13 +1,23 @@
 #!/usr/bin/env python3
 """Enrich the generated catalog with a method/stage taxonomy, an effective
-description (body-derived when frontmatter is absent), and a per-skill hygiene
-score.
+description (body-derived when frontmatter is absent), a per-skill hygiene
+score, and an eval-coverage map sourced from ``eval-harness/scenarios/*.toml``.
 
 This is an additive layer: it reads the authoritative ``catalog/skills.json`` and
 ``catalog/provenance.json`` (it never mutates them or any vendored skill) and
 writes ``catalog/skills-enriched.json`` plus human-readable
-``docs/SKILL_QUALITY.md`` and ``docs/TAXONOMY.md``. The upgraded
-``docs/search.html`` consumes the enriched JSON.
+``docs/SKILL_HYGIENE.md`` (structural score) and ``docs/TAXONOMY.md``. The
+historical ``docs/SKILL_QUALITY.md`` filename is preserved as a 5-line
+redirect-to-SKILL_HYGIENE.md alias so external links keep working. The
+upgraded ``docs/search.html`` consumes the enriched JSON.
+
+The two-column design is deliberate: **hygiene** measures structural
+correctness (frontmatter, description, length vs. progressive disclosure);
+**eval coverage** measures behavioural depth (which scenarios flag a
+known methodological trap for that skill). The mean quality score is the
+hygiene number — it is *not* a claim about whether the skill produces
+correct econometrics. For correctness see ``benchmark/`` (numeric
+recovery) and ``eval-harness/`` (behavioural evals).
 
 Stdlib only (no PyYAML / third-party), consistent with the rest of scripts/.
 
@@ -21,14 +31,17 @@ import argparse
 import json
 import re
 import sys
+from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS_JSON = ROOT / "catalog" / "skills.json"
 PROVENANCE_JSON = ROOT / "catalog" / "provenance.json"
 ENRICHED_JSON = ROOT / "catalog" / "skills-enriched.json"
-QUALITY_MD = ROOT / "docs" / "SKILL_QUALITY.md"
+HYGIENE_MD = ROOT / "docs" / "SKILL_HYGIENE.md"     # primary structural-quality doc
+QUALITY_MD = ROOT / "docs" / "SKILL_QUALITY.md"     # historical redirect, kept for backward links
 TAXONOMY_MD = ROOT / "docs" / "TAXONOMY.md"
+EVAL_SCENARIOS_DIR = ROOT / "eval-harness" / "scenarios"
 
 SCHEMA_VERSION = 1
 
@@ -153,6 +166,61 @@ def has_references(skill_path: Path) -> bool:
     return refs.is_dir() and any(refs.iterdir())
 
 
+# Minimal TOML parser scoped to the fields we need (id, skill, category,
+# severity). Avoids a runtime dependency on `tomli` for Python 3.9.
+_TOML_KV_RE = re.compile(r'^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$')
+_TOML_ARRAY_RE = re.compile(r"^\s*\[(.+?)\]\s*$")
+
+
+def _parse_minimal_toml(path: Path) -> dict:
+    out: dict = {}
+    if not path.exists():
+        return out
+    for raw in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        s = raw.split("#", 1)[0].rstrip()
+        if not s.strip():
+            continue
+        if _TOML_ARRAY_RE.match(s):
+            # Nested arrays of tables aren't needed for the fields we read.
+            continue
+        m = _TOML_KV_RE.match(s)
+        if not m:
+            continue
+        key, val = m.group(1), m.group(2).strip()
+        if val.startswith('"') and val.endswith('"'):
+            out[key] = val[1:-1]
+        elif val.startswith("'") and val.endswith("'"):
+            out[key] = val[1:-1]
+        else:
+            out[key] = val
+    return out
+
+
+def load_eval_coverage() -> dict[str, list[str]]:
+    """Scan eval-harness/scenarios/*.toml and map each declared ``skill`` path
+    to the sorted list of scenario IDs that target it. Reads only the minimal
+    fields needed so we don't take a runtime TOML dependency.
+
+    Falls back to an empty map when the eval-harness directory is absent (e.g.
+    when the repo is checked out without the Git submodule that ships it).
+    """
+    coverage: dict[str, list[str]] = defaultdict(list)
+    if not EVAL_SCENARIOS_DIR.is_dir():
+        return {}
+    for scenario_path in sorted(EVAL_SCENARIOS_DIR.glob("*.toml")):
+        meta = _parse_minimal_toml(scenario_path)
+        sid = meta.get("id") or scenario_path.stem
+        skill_path = meta.get("skill")
+        if not skill_path:
+            continue
+        # Allow both "skills/X/SKILL.md" and the bare "X" form.
+        if not skill_path.endswith("SKILL.md"):
+            skill_path = skill_path.rstrip("/") + "/SKILL.md"
+        coverage[skill_path].append(sid)
+    # Sort scenario IDs deterministically.
+    return {k: sorted(v) for k, v in coverage.items()}
+
+
 def score_skill(skill: dict, eff_desc: str, desc_source: str, refs: bool) -> tuple[int, list[str]]:
     score, flags = 100, []
     if not skill.get("has_frontmatter"):
@@ -184,6 +252,7 @@ def build() -> dict:
     catalog = load_json(SKILLS_JSON)
     provenance = load_json(PROVENANCE_JSON)
     prov_by_id = {c["id"]: c for c in provenance.get("collections", [])}
+    eval_coverage = load_eval_coverage()
 
     enriched = []
     facet_counts: dict[str, dict[str, int]] = {f: {} for f in TAXONOMY}
@@ -222,10 +291,15 @@ def build() -> dict:
             "commercial_use": prov.get("commercial_use"),
             "source_url": prov.get("source_url"),
             "sync": prov.get("sync"),
+            # Behavioural depth: which eval-harness scenarios target this skill.
+            # Empty list is a strong signal of an under-tested skill, not "no
+            # coverage" — see the per-collection table for context.
+            "eval_coverage": eval_coverage.get(skill["path"], []),
         })
 
     enriched.sort(key=lambda s: s["path"])
     scores = [s["quality_score"] for s in enriched]
+    n_with_eval = sum(1 for s in enriched if s["eval_coverage"])
     summary = {
         "skills": len(enriched),
         "mean_quality_score": round(sum(scores) / len(scores), 1) if scores else 0,
@@ -233,6 +307,9 @@ def build() -> dict:
         "body_derived_description": sum(1 for s in enriched if s["description_source"] == "derived"),
         "no_description": sum(1 for s in enriched if s["description_source"] == "none"),
         "tagged": sum(1 for s in enriched if s["tags"]),
+        "with_eval_coverage": n_with_eval,
+        "with_eval_coverage_pct": round(100 * n_with_eval / len(enriched), 1) if enriched else 0,
+        "total_eval_scenarios": len(eval_coverage),
     }
     taxonomy = {f: dict(sorted(c.items(), key=lambda kv: (-kv[1], kv[0]))) for f, c in facet_counts.items()}
     return {
@@ -244,7 +321,8 @@ def build() -> dict:
     }
 
 
-def render_quality_md(payload: dict) -> str:
+def render_hygiene_md(payload: dict) -> str:
+    """Render the two-column SKILL_HYGIENE.md: structural hygiene + eval coverage."""
     s = payload["summary"]
     skills = payload["skills"]
     by_collection: dict[str, list[dict]] = {}
@@ -252,39 +330,135 @@ def render_quality_md(payload: dict) -> str:
         by_collection.setdefault(sk["collection"], []).append(sk)
 
     lines = [
-        "# Skill Quality Scorecard",
+        "# Skill Hygiene Scorecard",
         "",
-        "Generated by `scripts/build-catalog-enrich.py`. The hygiene score is a "
-        "**structural** signal (frontmatter, description, length vs. progressive "
-        "disclosure) — not a correctness judgement. For correctness see "
-        "[`eval-harness/`](../eval-harness/) and [`benchmark/`](../benchmark/).",
+        "Generated by `scripts/build-catalog-enrich.py`. **The mean hygiene score "
+        "is a structural signal** (frontmatter, description, length vs. progressive "
+        "disclosure) — it is *not* a claim about whether the skill produces "
+        "correct econometrics. For correctness see [`benchmark/`](../benchmark/) "
+        "(numeric recovery) and [`eval-harness/`](../eval-harness/) (behavioural "
+        "evals).",
+        "",
+        "## Why two columns?",
+        "",
+        "A skill can be **well-formed** (high hygiene) yet **untested for the "
+        "traps an applied economist needs it to catch** (zero eval coverage), and "
+        "vice-versa. This scorecard reports both so reviewers don't conflate them.",
+        "",
+        "| Column | What it measures | Source |",
+        "|---|---|---|",
+        "| **Hygiene score** | Frontmatter, description, line count, "
+        "`references/` presence | `scripts/build-catalog-enrich.py` |",
+        "| **Eval coverage** | How many [`eval-harness/scenarios/`](../eval-harness/scenarios/) "
+        "target this skill | `eval-harness/scenarios/*.toml` → `skill = …` field |",
         "",
         "## Summary",
         "",
-        f"- Skills scored: {s['skills']}",
+        f"- Skills scored: **{s['skills']}**",
         f"- Mean hygiene score: **{s['mean_quality_score']}/100**",
+        f"- Skills with at least one eval scenario: "
+        f"**{s['with_eval_coverage']}** "
+        f"({s['with_eval_coverage_pct']}% of catalog)",
+        f"- Total eval-harness scenarios that target a specific skill: "
+        f"**{s['total_eval_scenarios']}**",
         f"- Descriptions: {s['with_frontmatter_description']} from frontmatter, "
         f"{s['body_derived_description']} body-derived, {s['no_description']} none",
         f"- Tagged with at least one taxonomy facet: {s['tagged']}",
         "",
-        "## Per-collection hygiene",
+        "## Per-collection: hygiene × eval coverage",
         "",
-        "| Collection | Skills | Mean score | Lowest |",
-        "|---|---:|---:|---:|",
+        "| Collection | Skills | Mean hygiene | Min hygiene | "
+        "Skills w/ ≥1 eval | Total eval scenarios |",
+        "|---|---:|---:|---:|---:|---:|",
     ]
     for coll in sorted(by_collection):
         group = by_collection[coll]
         mean = round(sum(g["quality_score"] for g in group) / len(group), 1)
         low = min(g["quality_score"] for g in group)
-        lines.append(f"| `{coll}` | {len(group)} | {mean} | {low} |")
+        with_eval = sum(1 for g in group if g["eval_coverage"])
+        total_eval = sum(len(g["eval_coverage"]) for g in group)
+        lines.append(
+            f"| `{coll}` | {len(group)} | {mean} | {low} | {with_eval} | {total_eval} |"
+        )
 
+    # Lowest-hygiene skills — the natural improvement targets.
     lowest = sorted(skills, key=lambda x: x["quality_score"])[:25]
-    lines += ["", "## 25 lowest-hygiene skills (improvement targets)", "",
-              "| Score | Skill | Flags |", "|---:|---|---|"]
+    lines += [
+        "",
+        "## 25 lowest-hygiene skills (improvement targets)",
+        "",
+        "| Score | Skill | Flags | Eval coverage |",
+        "|---:|---|---|---:|",
+    ]
     for sk in lowest:
         flags = ", ".join(sk["quality_flags"]) or "-"
-        lines.append(f"| {sk['quality_score']} | [`{sk['path']}`]({_doc_rel(sk['path'])}) | {flags} |")
+        eval_str = ", ".join(sk["eval_coverage"]) if sk["eval_coverage"] else "—"
+        lines.append(
+            f"| {sk['quality_score']} | [`{sk['path']}`]({_doc_rel(sk['path'])}) | "
+            f"{flags} | {eval_str} |"
+        )
+
+    # Skills with rich eval coverage — the "tested and tidy" leaders.
+    leaders = sorted(
+        [sk for sk in skills if sk["eval_coverage"]],
+        key=lambda x: (-len(x["eval_coverage"]), x["path"]),
+    )[:15]
+    lines += [
+        "",
+        "## Top 15 skills by eval coverage (the \"tested and tidy\" leaders)",
+        "",
+        "| # evals | Skill | Hygiene |",
+        "|---:|---|---:|",
+    ]
+    for sk in leaders:
+        lines.append(
+            f"| {len(sk['eval_coverage'])} | "
+            f"[`{sk['path']}`]({_doc_rel(sk['path'])}) | {sk['quality_score']} |"
+        )
+
+    lines += [
+        "",
+        "## Reading this report",
+        "",
+        "- **High hygiene + zero eval coverage** → skill is well-formed but the "
+        "rigor layer doesn't yet check it. Open an issue to add a scenario, "
+        "or [contribute one](../CONTRIBUTING.md).",
+        "- **Low hygiene + rich eval coverage** → skill has behavioural depth but "
+        "should be split into `references/` (see "
+        "[`LONG_SKILL_STATUS.md`](LONG_SKILL_STATUS.md)).",
+        "- **Both low** → vendored upstream mirror that no one has groomed yet; "
+        "either replace the source or remove from catalog.",
+        "",
+    ]
     return "\n".join(lines) + "\n"
+
+
+def render_quality_redirect_md() -> str:
+    """Render the body of ``docs/SKILL_QUALITY.md``.
+
+    The page is a 5-line backward-compatibility redirect to
+    ``SKILL_HYGIENE.md``. The two docs report the same two-column scorecard
+    (structural hygiene + eval-coverage count); the rename clarifies that
+    the score measures *form*, not correctness. Historical links to
+    SKILL_QUALITY.md resolve through this stub.
+    """
+    return (
+        "<!-- This file is a backward-compatibility redirect. The structural "
+        "quality report was renamed to SKILL_HYGIENE.md in 2026-07 to clarify "
+        "that the score measures *form*, not correctness. Behavioural depth is "
+        "now reported as a second column. -->\n"
+        "\n"
+        "# Skill Quality Scorecard → moved to [`SKILL_HYGIENE.md`](SKILL_HYGIENE.md)\n"
+        "\n"
+        "This page now lives at "
+        "[`docs/SKILL_HYGIENE.md`](SKILL_HYGIENE.md). The rename reflects that the "
+        "scorecard reports **two columns**: a structural hygiene score and an "
+        "eval-coverage count. Historical links redirect here so nothing breaks.\n"
+        "\n"
+        "See also: [`docs/eval-harness/README.md`](../eval-harness/README.md) "
+        "(behavioural) and [`docs/benchmark/README.md`](../benchmark/README.md) "
+        "(numeric recovery).\n"
+    )
 
 
 def render_taxonomy_md(payload: dict) -> str:
@@ -327,10 +501,14 @@ def _doc_rel(repo_path: str) -> str:
 
 def write_outputs(payload: dict) -> None:
     ENRICHED_JSON.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    QUALITY_MD.write_text(render_quality_md(payload), encoding="utf-8")
+    HYGIENE_MD.write_text(render_hygiene_md(payload), encoding="utf-8")
+    # Keep the historical SKILL_QUALITY.md as a 5-line redirect to
+    # SKILL_HYGIENE.md so historical links still resolve.
+    QUALITY_MD.write_text(render_quality_redirect_md(), encoding="utf-8")
     TAXONOMY_MD.write_text(render_taxonomy_md(payload), encoding="utf-8")
     print(f"Wrote {ENRICHED_JSON.relative_to(ROOT)}")
-    print(f"Wrote {QUALITY_MD.relative_to(ROOT)}")
+    print(f"Wrote {HYGIENE_MD.relative_to(ROOT)}")
+    print(f"Wrote {QUALITY_MD.relative_to(ROOT)} (redirect)")
     print(f"Wrote {TAXONOMY_MD.relative_to(ROOT)}")
 
 
@@ -339,8 +517,10 @@ def check_outputs(payload: dict) -> int:
     if not ENRICHED_JSON.exists() or ENRICHED_JSON.read_text(encoding="utf-8") != \
             json.dumps(payload, indent=2, ensure_ascii=False) + "\n":
         problems.append("catalog/skills-enriched.json is stale")
-    if not QUALITY_MD.exists() or QUALITY_MD.read_text(encoding="utf-8") != render_quality_md(payload):
-        problems.append("docs/SKILL_QUALITY.md is stale")
+    if not HYGIENE_MD.exists() or HYGIENE_MD.read_text(encoding="utf-8") != render_hygiene_md(payload):
+        problems.append("docs/SKILL_HYGIENE.md is stale")
+    if not QUALITY_MD.exists() or QUALITY_MD.read_text(encoding="utf-8") != render_quality_redirect_md():
+        problems.append("docs/SKILL_QUALITY.md redirect is stale")
     if not TAXONOMY_MD.exists() or TAXONOMY_MD.read_text(encoding="utf-8") != render_taxonomy_md(payload):
         problems.append("docs/TAXONOMY.md is stale")
     if problems:

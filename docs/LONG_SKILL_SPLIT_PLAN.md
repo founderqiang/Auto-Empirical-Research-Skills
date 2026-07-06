@@ -65,5 +65,5 @@ Re-run the enrichment to watch the flag count fall as upstream splits land:
 
 ```bash
 make catalog            # regenerates catalog/skills-enriched.json
-grep -c "no-references" docs/SKILL_QUALITY.md   # improvement targets remaining
+grep -c "no-references" docs/SKILL_HYGIENE.md   # improvement targets remaining
 ```

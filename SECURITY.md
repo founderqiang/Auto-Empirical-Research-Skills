@@ -42,4 +42,4 @@ We aim to triage credible reports within 7 days. High-risk findings may result i
 ## Audit Reports
 
 - [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) — deep audit of the curated in-repo skills (13 grep threat classes, full manual hook review, parallel agent content review).
-- [`SECURITY-SCAN-REPORT-23k.md`](SECURITY-SCAN-REPORT-23k.md) — breadth scan of the 23,000+-skill upstream pool (95 repositories, 62,957 files, 16 automated threat patterns plus sampled triage and full hook re-review).
+- [`docs/archive/SECURITY-SCAN-REPORT-23k-archive.md`](docs/archive/SECURITY-SCAN-REPORT-23k-archive.md) — *historical archive* (2026-07-06). Breadth scan of the 23,000+-skill upstream pool (95 repositories, 62,957 files, 16 automated threat patterns plus sampled triage and full hook re-review). Superseded by the current `SECURITY-SCAN-REPORT.md` after the catalog was trimmed to 1,150 skills.

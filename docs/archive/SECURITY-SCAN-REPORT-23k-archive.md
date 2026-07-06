@@ -1,3 +1,12 @@
+# Archived: Pre-Trim Security Scan (23,000+ skills era)
+
+> **ARCHIVED 2026-07-06.** This is the historical security scan from when
+> the catalog contained ~23,000 skills. The current scan lives in
+> [`/SECURITY-SCAN-REPORT.md`](../../SECURITY-SCAN-REPORT.md) for the
+> current 1,150-skill catalog. This file is kept for historical reference.
+
+---
+
 # Skills 安全扫描报告（23k 上游池子 · 95 仓库全量快速审查）
 
 **扫描日期**：2026-04-28（夜间批量自动化扫描）
