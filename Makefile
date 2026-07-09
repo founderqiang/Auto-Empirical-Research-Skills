@@ -37,6 +37,8 @@ validate:
 	python3 scripts/validate-workflows.py
 	python3 scripts/check-ecosystem.py
 	python3 scripts/check-readme-stats.py
+	python3 scripts/check-catalog-coverage.py
+	python3 scripts/check-plugin-source-location.py
 	$(MAKE) paper-workflow-check
 	python3 scripts/build-provenance.py --check
 	python3 scripts/build-skill-audit.py --check

@@ -25,14 +25,11 @@ import toml_compat
 ROOT = Path(__file__).resolve().parents[1]
 SCENARIO_DIR = ROOT / "eval-harness" / "scenarios"
 TASK_DIR = ROOT / "benchmark" / "tasks"
-READMES = (
-    "README.md",
-    "README-en.md",
-    "README-zh-CN.md",
-    "README-zh-TW.md",
-    "README-ja.md",
-    "README-ko.md",
-)
+# P2.2 refactor (2026-07) made `README.md` and the four locale READMEs
+# (`-zh-CN` / `-zh-TW` / `-ja` / `-ko`) *entry-banner only*. The complete
+# trust-surface stats table — Numeric benchmark tasks, Eval scenarios,
+# etc. — lives only in the English README. We lint that one.
+READMES = ("README-en.md",)
 
 BENCH_LINK = "[`benchmark/`](benchmark/)"
 EVAL_LINK = "[`eval-harness/`](eval-harness/)"

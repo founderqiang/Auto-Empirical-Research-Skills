@@ -25,7 +25,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install scientific stack for Paper-WorkFlow demo gate
-        run: python3 -m pip install numpy pandas matplotlib statsmodels linearmodels
+        run: python3 -m pip install -r requirements.txt
 
       - name: Validate repository structure and generated artifacts
         run: make validate
