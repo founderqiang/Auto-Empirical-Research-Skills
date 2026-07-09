@@ -22,7 +22,11 @@ jobs:
 
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          # Bumped 3.11 -> 3.12 to match the rest of the workflows
+          # (sync-aer-skills, sync-statspai-skill, quality matrix) and to
+          # unblock Dependabot's numpy>=2.5.1 bump, which requires
+          # Python >= 3.12.
+          python-version: "3.12"
 
       - name: Install scientific stack for Paper-WorkFlow demo gate
         run: python3 -m pip install -r requirements.txt
