@@ -1034,17 +1034,32 @@
       "source_url": "https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills",
       "sync": "manual vendor snapshot",
       "vendored_commit": null
+    },
+    {
+      "commercial_use": "share-alike",
+      "id": "70-ssci-polish",
+      "last_aers_review": "2026-05-31",
+      "license": "CC-BY-SA-4.0 (repository default)",
+      "license_file": null,
+      "origin": "direct community contribution",
+      "path": "skills/70-ssci-polish",
+      "security_review": "SECURITY-SCAN-REPORT.md",
+      "skill_count": 1,
+      "source_confidence": "high",
+      "source_url": "https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills",
+      "sync": "manual",
+      "vendored_commit": null
     }
   ],
   "generated_by": "scripts/build-provenance.py",
   "scan_date": "2026-05-31",
   "schema_version": "1.0",
   "summary": {
-    "collections": 69,
+    "collections": 70,
     "commercial_use": {
       "allowed": 36,
       "restricted": 2,
-      "share-alike": 7,
+      "share-alike": 8,
       "unknown": 24
     },
     "licenses": {
@@ -1052,7 +1067,7 @@
       "Apache-2.0": 1,
       "CC-BY-NC-4.0 (non-commercial)": 1,
       "CC-BY-SA-4.0": 1,
-      "CC-BY-SA-4.0 (repository default)": 4,
+      "CC-BY-SA-4.0 (repository default)": 5,
       "GPL-3.0": 1,
       "MIT": 35,
       "MIT Non-Commercial": 1,
@@ -1060,7 +1075,7 @@
       "UNKNOWN - check upstream": 22
     },
     "source_confidence": {
-      "high": 38,
+      "high": 39,
       "low": 6,
       "medium": 21,
       "unresolved": 4
