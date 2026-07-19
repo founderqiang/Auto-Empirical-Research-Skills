@@ -239,6 +239,10 @@ def markdown_anchors(text: str) -> set[str]:
         count = seen[base]
         seen[base] += 1
         anchors.add(base if count == 0 else f"{base}-{count}")
+    # GitHub also honors explicit id=/name= attributes on inline HTML
+    # (e.g. <a id="skill-42"></a> table-row anchors).
+    for match in re.finditer(r'<[a-zA-Z][^>]*?\s(?:id|name)="([^"]+)"', text):
+        anchors.add(match.group(1).lower())
     return anchors
 
 
