@@ -438,6 +438,110 @@ def validate_root_install_skill() -> tuple[list[str], list[str]]:
     return errors, warnings
 
 
+_NUMBER_WORDS = {
+    "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6,
+    "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12,
+}
+
+
+def _parse_count_token(token: str) -> int | None:
+    token = token.strip().lower().replace(",", "")
+    if token.isdigit():
+        return int(token)
+    return _NUMBER_WORDS.get(token)
+
+
+def validate_root_skill_stats(catalog_path: Path = CATALOG_JSON) -> tuple[list[str], list[str]]:
+    """Keep the hardcoded stats in the root router SKILL.md honest.
+
+    The router quotes the catalog size ("N skills across M vendored
+    collections"), the duplicate bare-name count, and the list of legacy
+    collections that ship no standard SKILL.md. None of these were previously
+    validated, so a catalog refresh could silently strand the router with
+    stale numbers — exactly the drift this repo's other stat checkers exist
+    to prevent.
+    """
+
+    errors: list[str] = []
+    warnings: list[str] = []
+    skill_path = ROOT / "SKILL.md"
+    if not skill_path.exists() or not catalog_path.exists():
+        return errors, warnings  # existence is owned by other checks
+    try:
+        payload = json.loads(catalog_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return errors, warnings  # validity is owned by validate_catalog_snapshot
+
+    text = read_text(skill_path)
+    summary = payload.get("summary", {})
+
+    size_match = re.search(r"\*\*([\d,]+) skills across ([\d,]+) vendored collections\*\*", text)
+    if not size_match:
+        errors.append(
+            "root SKILL.md missing catalog size line "
+            "(`**<n> skills across <m> vendored collections**`)"
+        )
+    else:
+        stated_skills = _parse_count_token(size_match.group(1))
+        stated_collections = _parse_count_token(size_match.group(2))
+        if stated_skills != summary.get("skill_files"):
+            errors.append(
+                f"root SKILL.md says {size_match.group(1)} skills but catalog summary "
+                f"has skill_files={summary.get('skill_files')}"
+            )
+        if stated_collections != summary.get("top_level_collections"):
+            errors.append(
+                f"root SKILL.md says {size_match.group(2)} vendored collections but catalog "
+                f"summary has top_level_collections={summary.get('top_level_collections')}"
+            )
+
+    dup_match = re.search(r"([\d,]+) bare `name`s", text)
+    if not dup_match:
+        errors.append("root SKILL.md missing duplicate bare-name count (`<n> bare `name`s`)")
+    elif _parse_count_token(dup_match.group(1)) != summary.get("duplicate_bare_names"):
+        errors.append(
+            f"root SKILL.md says {dup_match.group(1)} bare names collide but catalog summary "
+            f"has duplicate_bare_names={summary.get('duplicate_bare_names')}"
+        )
+
+    # Legacy collections = top-level skills/ dirs with content that the catalog
+    # does not track (they ship plain .md skills instead of SKILL.md files).
+    # Empty dirs are skipped so an uninitialized submodule is not miscounted;
+    # validate_catalog_snapshot already flags that state.
+    catalog_ids = {
+        entry.get("id")
+        for entry in payload.get("collections", [])
+        if isinstance(entry, dict) and entry.get("id")
+    }
+    legacy_dirs = sorted(
+        entry.name
+        for entry in os.scandir(SKILLS_DIR)
+        if entry.is_dir() and entry.name not in catalog_ids and any(Path(entry.path).rglob("*"))
+    ) if SKILLS_DIR.exists() else []
+
+    for legacy in legacy_dirs:
+        if f"skills/{legacy}/" not in text:
+            errors.append(
+                f"root SKILL.md Coverage Notes must mention legacy collection `skills/{legacy}/` "
+                "(it has no SKILL.md files, so the catalog cannot route to it)"
+            )
+    legacy_count_match = re.search(r"([A-Za-z]+|[\d,]+) legacy collections", text)
+    if legacy_count_match:
+        stated = _parse_count_token(legacy_count_match.group(1))
+        if stated is not None and stated != len(legacy_dirs):
+            errors.append(
+                f"root SKILL.md says {legacy_count_match.group(1)} legacy collections but "
+                f"skills/ has {len(legacy_dirs)}: {', '.join(legacy_dirs)}"
+            )
+    elif legacy_dirs:
+        errors.append(
+            "root SKILL.md missing legacy-collections count "
+            "(`<n> legacy collections`) in Coverage Notes"
+        )
+
+    return errors, warnings
+
+
 def validate_catalog_snapshot(catalog_path: Path = CATALOG_JSON) -> tuple[list[str], list[str]]:
     """Fast consistency check between the committed catalog summary and skills/.
 
@@ -498,6 +602,7 @@ def main() -> int:
     checks = [
         validate_required_files,
         validate_root_install_skill,
+        validate_root_skill_stats,
         validate_catalog_snapshot,
         validate_skill_frontmatter,
         validate_markdown_links,
